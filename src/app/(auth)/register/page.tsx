@@ -56,6 +56,9 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
+      options: {
+        data: { full_name: name.trim() },
+      },
     });
 
     if (error) {
