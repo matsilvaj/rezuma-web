@@ -139,7 +139,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-sm space-y-6 p-8">
         <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Entrar no Summai</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Entrar no Rezuma</h1>
           <p className="text-sm text-muted-foreground">Seus ativos, resumidos.</p>
         </div>
 

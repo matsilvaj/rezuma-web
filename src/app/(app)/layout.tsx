@@ -30,7 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen flex">
       {/* Sidebar */}
       <aside className="w-56 border-r bg-muted/30 flex flex-col py-6 px-4 gap-2">
-        <div className="text-lg font-bold tracking-tight mb-6 px-2">Summai</div>
+        <div className="text-lg font-bold tracking-tight mb-6 px-2">Rezuma</div>
 
         <nav className="flex flex-col gap-1 flex-1">
           <NavLink href="/dashboard" icon={<LayoutDashboard size={16} />}>

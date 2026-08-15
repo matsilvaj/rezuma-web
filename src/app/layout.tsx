@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Summai",
+  title: "Rezuma",
   description: "Resumos de relatórios de ações e FIIs para investidores.",
 };
 

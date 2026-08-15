@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Check, ExternalLink, Loader2 } from "lucide-react";
 
-const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "SummaiAppBot";
+const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "RezumaAppBot";
 
 const STATUS_LABEL: Record<string, string> = {
   trialing: "Trial (7 dias grátis)",
@@ -265,7 +265,7 @@ export default function SettingsPage() {
       <section className="space-y-4">
         <div>
           <h2 className="text-base font-semibold">Perfil</h2>
-          <p className="text-sm text-muted-foreground">Seu nome exibido no Summai.</p>
+          <p className="text-sm text-muted-foreground">Seu nome exibido no Rezuma.</p>
         </div>
         <form onSubmit={handleSaveProfile} noValidate className="space-y-4">
           <div className="space-y-1">

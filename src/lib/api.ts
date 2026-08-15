@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Faz uma requisição autenticada para o summai-api.
+ * Faz uma requisição autenticada para o rezuma-api.
  * Busca o token de sessão do Supabase e injeta no header Authorization.
  */
 async function apiFetch(path: string, options: RequestInit = {}) {
