@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
-import { usersApi } from "@/lib/api";
+import { usersApi, billingApi } from "@/lib/api";
 import { UserProfile } from "@/types";
 import { validateName, validateEmail, validatePassword, validatePasswordConfirm } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,10 @@ export default function SettingsPage() {
   const [emailErrors, setEmailErrors] = useState<{ password?: string; email?: string; confirm?: string }>({});
   const [savingEmail, setSavingEmail] = useState(false);
   const [emailChangeSent, setEmailChangeSent] = useState(false);
+
+  // Billing
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
 
   // Senha
   const [currentPassword, setCurrentPassword] = useState("");
@@ -251,6 +255,31 @@ export default function SettingsPage() {
     }
   }
 
+  // --- Billing ---
+  async function handleCheckout() {
+    setCheckingOut(true);
+    try {
+      const { url } = await billingApi.checkout("monthly");
+      window.location.href = url;
+    } catch {
+      toast.error("Erro ao iniciar checkout. Tente novamente.");
+    } finally {
+      setCheckingOut(false);
+    }
+  }
+
+  async function handlePortal() {
+    setOpeningPortal(true);
+    try {
+      const { url } = await billingApi.portal();
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      toast.error("Erro ao abrir portal de assinatura.");
+    } finally {
+      setOpeningPortal(false);
+    }
+  }
+
   if (loading) {
     return <p className="text-sm text-muted-foreground">Carregando…</p>;
   }
@@ -390,23 +419,38 @@ export default function SettingsPage() {
           <h2 className="text-base font-semibold">Plano</h2>
           <p className="text-sm text-muted-foreground">Sua assinatura atual.</p>
         </div>
-        {profile?.subscription && (
-          <div className="rounded-lg border p-4 flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-sm font-medium">
-                {STATUS_LABEL[profile.subscription.status] ?? profile.subscription.status}
-              </p>
-              {profile.subscription.status === "trialing" && profile.subscription.trial_ends_at && (
-                <p className="text-xs text-muted-foreground">
-                  Expira em {new Date(profile.subscription.trial_ends_at).toLocaleDateString("pt-BR")}
+        <div className="rounded-lg border p-4 flex items-center justify-between">
+          <div className="space-y-0.5">
+            {profile?.subscription ? (
+              <>
+                <p className="text-sm font-medium">
+                  {STATUS_LABEL[profile.subscription.status] ?? profile.subscription.status}
                 </p>
-              )}
-            </div>
-            <Button variant="outline" size="sm" disabled>
-              Alterar plano <span className="ml-1 text-xs text-muted-foreground">(em breve)</span>
-            </Button>
+                {profile.subscription.status === "trialing" && profile.subscription.trial_ends_at && (
+                  <p className="text-xs text-muted-foreground">
+                    Trial expira em {new Date(profile.subscription.trial_ends_at).toLocaleDateString("pt-BR")}
+                  </p>
+                )}
+                {profile.subscription.status === "active" && profile.subscription.current_period_end && (
+                  <p className="text-xs text-muted-foreground">
+                    Renova em {new Date(profile.subscription.current_period_end).toLocaleDateString("pt-BR")}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-sm font-medium text-muted-foreground">Sem assinatura ativa</p>
+            )}
           </div>
-        )}
+          {profile?.subscription?.status === "active" ? (
+            <Button variant="outline" size="sm" onClick={handlePortal} disabled={openingPortal}>
+              {openingPortal ? "Abrindo…" : "Gerenciar assinatura"}
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleCheckout} disabled={checkingOut}>
+              {checkingOut ? "Redirecionando…" : "Assinar"}
+            </Button>
+          )}
+        </div>
       </section>
 
       <hr className="border-border" />

@@ -61,6 +61,17 @@ export const reportsApi = {
   list: (page = 1) => apiFetch(`/api/v1/reports/?page=${page}`),
 };
 
+// Billing
+export const billingApi = {
+  checkout: (plan: "monthly" | "annual") =>
+    apiFetch("/api/v1/billing/checkout", {
+      method: "POST",
+      body: JSON.stringify({ plan }),
+    }),
+  portal: () =>
+    apiFetch("/api/v1/billing/portal", { method: "POST" }),
+};
+
 // Users
 export const usersApi = {
   getProfile: () => apiFetch("/api/v1/users/me"),
