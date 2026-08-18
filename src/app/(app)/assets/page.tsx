@@ -285,11 +285,6 @@ export default function AssetsPage() {
                   <span style={{ fontFamily: S.mono, fontSize: "15px", fontWeight: 700, color: S.textP, letterSpacing: "-0.5px" }}>
                     {asset.ticker}
                   </span>
-                  {asset.name && asset.name !== asset.ticker && (
-                    <span style={{ fontFamily: S.sans, fontSize: "12px", color: S.textS }}>
-                      {asset.name}
-                    </span>
-                  )}
                   {asset.type && (
                     <span style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, border: `1px solid ${S.border}`, borderRadius: "4px", padding: "1px 6px", letterSpacing: "0.4px" }}>
                       {asset.type === "fii" ? "FII" : "AÇÃO"}

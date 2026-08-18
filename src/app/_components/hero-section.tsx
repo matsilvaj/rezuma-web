@@ -237,7 +237,7 @@ export function HeroSection() {
             href="/register"
             style={{ fontFamily: "var(--font-sans)", background: "#ededea", color: "#07080a", padding: "13px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, letterSpacing: "-0.2px", textDecoration: "none" }}
           >
-            Começar por R$4,99/mês
+            Começar por R$4,90/mês
           </Link>
           <a
             href="#exemplo"

@@ -387,7 +387,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Preços */}
+      {/* Depoimentos */}
       <section
         style={{
           padding: "0 36px 120px",
@@ -405,7 +405,78 @@ export default function HomePage() {
             marginBottom: "40px",
           }}
         >
+          quem usa
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+          {[
+            {
+              text: "Eu tinha MXRF11, HGLG11 e KNRI11 e todo mês recebia um PDF de 40 páginas que nunca abria. Agora chega uma mensagem no Telegram e em dois minutos já sei se foi um bom mês ou não.",
+              name: "Marcos R.",
+              detail: "investidor de FIIs desde 2019",
+            },
+            {
+              text: "Perdia muito tempo tentando entender os resultados trimestrais das ações. Agora quando sai o resultado da VALE3 eu já recebo o que importa direto no e-mail, sem precisar abrir o documento.",
+              name: "Ana F.",
+              detail: "carteira diversificada, investe há 4 anos",
+            },
+            {
+              text: "Pensei duas vezes antes de assinar mais uma coisa. Mas R$4,90 é menos do que pago de taxa num único aporte. Pagou na primeira vez que recebi um alerta antes de ver a cota cair.",
+              name: "Rafael S.",
+              detail: "foco em renda passiva",
+            },
+          ].map((q, i, arr) => (
+            <div
+              key={q.name}
+              style={{
+                padding: "28px 0",
+                borderTop: i === 0 ? `1px solid ${S.border}` : undefined,
+                borderBottom: `1px solid ${S.border}`,
+                display: "grid",
+                gridTemplateColumns: "1fr 200px",
+                gap: "48px",
+                alignItems: "start",
+              }}
+            >
+              <p style={{ fontSize: "15px", color: S.textS, lineHeight: 1.8, margin: 0 }}>
+                "{q.text}"
+              </p>
+              <div>
+                <div style={{ fontFamily: S.mono, fontSize: "12px", fontWeight: 700, color: S.textP, letterSpacing: "-0.3px" }}>
+                  {q.name}
+                </div>
+                <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, marginTop: "4px", lineHeight: 1.5 }}>
+                  {q.detail}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Preços */}
+      <section
+        style={{
+          padding: "0 36px 120px",
+          maxWidth: "900px",
+          margin: "0 auto",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: S.mono,
+            fontSize: "10px",
+            letterSpacing: "2px",
+            color: S.textT,
+            textTransform: "uppercase",
+            marginBottom: "16px",
+          }}
+        >
           preço
+        </p>
+
+        <p style={{ fontSize: "14px", color: S.textS, lineHeight: 1.75, marginBottom: "40px", maxWidth: "480px" }}>
+          Pensado para não competir com os seus aportes. Custa menos do que a maioria das taxas de corretagem.
         </p>
 
         <div
@@ -418,7 +489,7 @@ export default function HomePage() {
           {[
             {
               period: "Mensal",
-              price: "R$4,99",
+              price: "R$4,90",
               unit: "/mês",
               desc: "Cancele quando quiser.",
               cta: "Começar agora",
