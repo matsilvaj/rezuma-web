@@ -412,17 +412,17 @@ export default function HomePage() {
           {[
             {
               text: "Eu tinha MXRF11, HGLG11 e KNRI11 e todo mês recebia um PDF de 40 páginas que nunca abria. Agora chega uma mensagem no Telegram e em dois minutos já sei se foi um bom mês ou não.",
-              name: "Marcos R.",
+              name: "Marcos Ribeiro",
               detail: "investidor de FIIs desde 2019",
             },
             {
               text: "Perdia muito tempo tentando entender os resultados trimestrais das ações. Agora quando sai o resultado da VALE3 eu já recebo o que importa direto no e-mail, sem precisar abrir o documento.",
-              name: "Ana F.",
+              name: "Ana Ferreira",
               detail: "carteira diversificada, investe há 4 anos",
             },
             {
               text: "Pensei duas vezes antes de assinar mais uma coisa. Mas R$4,90 é menos do que pago de taxa num único aporte. Pagou na primeira vez que recebi um alerta antes de ver a cota cair.",
-              name: "Rafael S.",
+              name: "Rafael Souza",
               detail: "foco em renda passiva",
             },
           ].map((q, i, arr) => (
@@ -588,7 +588,7 @@ export default function HomePage() {
           margin: "0 auto",
         }}
       >
-        <img src="/logo.svg" alt="Rezuma" height={18} style={{ display: "block", opacity: 0.35 }} />
+        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "18px", width: "auto", opacity: 0.35 }} />
         <div style={{ display: "flex", gap: "24px" }}>
           <Link href="/login"    style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Entrar</Link>
           <Link href="/register" style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Criar conta</Link>

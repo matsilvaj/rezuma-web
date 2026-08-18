@@ -187,7 +187,7 @@ export function HeroSection() {
           padding: "22px 36px",
         }}
       >
-        <img src="/logo.svg" alt="Rezuma" height={22} style={{ display: "block" }} />
+        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "22px", width: "auto" }} />
         <Link
           href="/login"
           style={{ fontFamily: "var(--font-sans)", fontSize: "13px", fontWeight: 500, color: "rgba(237,237,234,0.40)", textDecoration: "none" }}
@@ -210,7 +210,7 @@ export function HeroSection() {
         }}
       >
         <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "2px", color: "rgba(237,237,234,0.22)", textTransform: "uppercase", marginBottom: "32px" }}>
-          relatórios de fiis e ações via ia
+          relatórios de fiis e ações
         </p>
 
         <h1
@@ -229,7 +229,7 @@ export function HeroSection() {
         </h1>
 
         <p style={{ fontFamily: "var(--font-sans)", fontSize: "16px", color: "rgba(237,237,234,0.38)", lineHeight: 1.75, maxWidth: "450px", marginBottom: "48px" }}>
-          A IA lê os documentos dos seus FIIs e ações e envia o que importa direto no seu e-mail ou Telegram.
+          Cada relatório publicado pelos seus FIIs e ações é lido e resumido automaticamente. O que importa chega no seu e-mail ou Telegram.
         </p>
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
