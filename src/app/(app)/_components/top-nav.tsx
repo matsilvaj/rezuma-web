@@ -34,7 +34,7 @@ export function AppTopNav() {
         aria-label="Rezuma"
         style={{ display: "flex", alignItems: "center", gap: "9px", textDecoration: "none", marginRight: "32px" }}
       >
-        <img src="/logo.svg" alt="Rezuma" height={20} style={{ display: "block" }} />
+        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "20px", width: "auto" }} />
       </Link>
 
       {/* Nav — centered */}
