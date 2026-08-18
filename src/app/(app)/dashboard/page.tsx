@@ -391,6 +391,27 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* GLOSSÁRIO */}
+          {report.glossary && report.glossary.length > 0 && (
+            <div style={{ marginBottom: "24px" }}>
+              <div style={{ background: "rgba(237,237,234,0.02)", border: `1px solid ${S.border}`, borderRadius: "6px", padding: "16px 18px" }}>
+                <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.6px", textTransform: "uppercase" as const, color: S.textT, fontWeight: 600, marginBottom: "14px" }}>
+                  Glossário
+                </div>
+                {report.glossary.map((entry, i) => (
+                  <div key={entry.term} style={{ marginBottom: i < report.glossary!.length - 1 ? "14px" : "0" }}>
+                    <div style={{ fontFamily: S.mono, fontSize: "11px", fontWeight: 700, color: S.textP, letterSpacing: "0.2px", marginBottom: "4px" }}>
+                      {entry.term}
+                    </div>
+                    <p style={{ fontFamily: S.sans, fontSize: "12px", color: "rgba(237,237,234,0.38)", lineHeight: 1.65, margin: 0 }}>
+                      {entry.definition}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ENTREGUE VIA + DOCUMENTO */}
           <div>
             <div style={{ height: "1px", background: S.border, marginBottom: "20px" }} />

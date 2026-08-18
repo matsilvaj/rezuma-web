@@ -6,6 +6,11 @@ export interface Asset {
   created_at: string;
 }
 
+export interface GlossaryTerm {
+  term: string;
+  definition: string;
+}
+
 export interface Report {
   id: string;
   ticker: string;
@@ -16,6 +21,8 @@ export interface Report {
   published_at: string;
   created_at: string;
   metrics: Record<string, number | string | null> | null;
+  /** Derivado do resumo pela API a partir do glossário do backend. */
+  glossary?: GlossaryTerm[];
 }
 
 export interface UserProfile {
