@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { validateEmail, validatePassword, translateSupabaseError } from "@/lib/validation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const LOCK_AFTER = 5;
 const LS_KEY = "_lga";
@@ -26,14 +23,37 @@ function readLS(): { count: number; lockedUntil: number | null } {
 }
 
 function writeLS(count: number, lockedUntil: number | null) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify({ count, lockedUntil }));
-  } catch { /* ignorar erros de storage */ }
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ count, lockedUntil })); } catch { /* ignorar */ }
 }
 
 function clearLS() {
   try { localStorage.removeItem(LS_KEY); } catch { /* ignorar */ }
 }
+
+const S = {
+  label: {
+    display: "block" as const,
+    fontFamily: "var(--font-mono)",
+    fontSize: "10px",
+    letterSpacing: "1.2px",
+    color: "rgba(237,237,234,0.40)",
+    textTransform: "uppercase" as const,
+    marginBottom: "7px",
+  },
+  input: {
+    width: "100%",
+    background: "#0d0f11",
+    border: "1px solid rgba(237,237,234,0.09)",
+    borderRadius: "7px",
+    padding: "10px 14px",
+    fontFamily: "var(--font-sans)",
+    fontSize: "14px",
+    color: "#ededea",
+    outline: "none",
+    WebkitAppearance: "none" as const,
+  } as React.CSSProperties,
+  err: { fontSize: "11px", color: "rgba(220,80,80,0.85)", marginTop: "5px" } as React.CSSProperties,
+};
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,12 +61,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({});
   const [loading, setLoading] = useState(false);
-
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockedUntil, setLockedUntil] = useState<number | null>(null);
   const [lockCountdown, setLockCountdown] = useState(0);
 
-  // Restaura o estado do localStorage ao montar
   useEffect(() => {
     const stored = readLS();
     setFailedAttempts(stored.count);
@@ -54,12 +72,10 @@ export default function LoginPage() {
       setLockedUntil(stored.lockedUntil);
       setLockCountdown(Math.ceil((stored.lockedUntil - Date.now()) / 1000));
     } else if (stored.lockedUntil) {
-      // Bloqueio expirou enquanto a aba estava fechada
       clearLS();
     }
   }, []);
 
-  // Contador regressivo durante o bloqueio
   useEffect(() => {
     if (!lockedUntil) return;
     const interval = setInterval(() => {
@@ -79,23 +95,20 @@ export default function LoginPage() {
   function validate(): boolean {
     const next: typeof errors = {};
     const emailErr = validateEmail(email);
-    const passErr = validatePassword(password);
-    if (emailErr) next.email = emailErr;
-    if (passErr) next.password = passErr;
+    const passErr  = validatePassword(password);
+    if (emailErr) next.email    = emailErr;
+    if (passErr)  next.password = passErr;
     setErrors(next);
     return Object.keys(next).length === 0;
   }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-
     if (lockedUntil && Date.now() < lockedUntil) {
       setErrors({ form: `Muitas tentativas. Aguarde ${lockCountdown} segundos para tentar novamente.` });
       return;
     }
-
     if (!validate()) return;
-
     setLoading(true);
     setErrors({});
 
@@ -108,7 +121,6 @@ export default function LoginPage() {
     if (error) {
       const newAttempts = failedAttempts + 1;
       setFailedAttempts(newAttempts);
-
       if (newAttempts >= LOCK_AFTER && newAttempts % LOCK_AFTER === 0) {
         const duration = lockDuration(newAttempts);
         const until = Date.now() + duration * 1000;
@@ -122,12 +134,10 @@ export default function LoginPage() {
         const suffix = remaining === 1 ? ". Mais 1 tentativa antes do bloqueio." : "";
         setErrors({ form: translateSupabaseError(error.message) + suffix });
       }
-
       setLoading(false);
       return;
     }
 
-    // Login bem-sucedido — limpa o contador
     clearLS();
     router.push("/dashboard");
     router.refresh();
@@ -136,78 +146,95 @@ export default function LoginPage() {
   const isLocked = !!lockedUntil && Date.now() < lockedUntil;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-sm space-y-6 p-8">
-        <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Entrar no Rezuma</h1>
-          <p className="text-sm text-muted-foreground">Seus ativos, resumidos.</p>
+    <>
+      <h1 style={{ fontFamily: "var(--font-sans)", fontSize: "24px", fontWeight: 700, color: "#ededea", letterSpacing: "-0.8px", marginBottom: "6px" }}>
+        Entrar no Rezuma
+      </h1>
+      <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.40)", lineHeight: 1.6 }}>
+        Seus ativos, resumidos.
+      </p>
+
+      <form onSubmit={handleLogin} noValidate style={{ marginTop: "32px", display: "flex", flexDirection: "column", gap: "18px" }}>
+        <div>
+          <label htmlFor="email" style={S.label}>E-mail</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="voce@email.com"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLocked}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            style={{ ...S.input, borderColor: errors.email ? "rgba(220,80,80,0.4)" : "rgba(237,237,234,0.09)" }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = errors.email ? "rgba(220,80,80,0.7)" : "rgba(237,237,234,0.22)"; }}
+            onBlur={(e)  => { e.currentTarget.style.borderColor = errors.email ? "rgba(220,80,80,0.4)" : "rgba(237,237,234,0.09)"; }}
+          />
+          {errors.email && <p id="email-error" style={S.err}>{errors.email}</p>}
         </div>
 
-        <form onSubmit={handleLogin} noValidate className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="email">E-mail</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="voce@email.com"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLocked}
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? "email-error" : undefined}
-            />
-            {errors.email && (
-              <p id="email-error" className="text-xs text-destructive">{errors.email}</p>
-            )}
-          </div>
+        <div>
+          <label htmlFor="password" style={S.label}>Senha</label>
+          <input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isLocked}
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? "password-error" : undefined}
+            style={{ ...S.input, borderColor: errors.password ? "rgba(220,80,80,0.4)" : "rgba(237,237,234,0.09)" }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = errors.password ? "rgba(220,80,80,0.7)" : "rgba(237,237,234,0.22)"; }}
+            onBlur={(e)  => { e.currentTarget.style.borderColor = errors.password ? "rgba(220,80,80,0.4)" : "rgba(237,237,234,0.09)"; }}
+          />
+          {errors.password && <p id="password-error" style={S.err}>{errors.password}</p>}
+        </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLocked}
-              aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? "password-error" : undefined}
-            />
-            {errors.password && (
-              <p id="password-error" className="text-xs text-destructive">{errors.password}</p>
-            )}
-          </div>
+        {errors.form && (
+          <p role="alert" style={{ fontSize: "13px", color: "rgba(220,80,80,0.85)", lineHeight: 1.5 }}>
+            {errors.form}
+          </p>
+        )}
 
-          {errors.form && (
-            <p role="alert" className="text-sm text-destructive">{errors.form}</p>
-          )}
-
-          <div className="flex justify-end">
-            <Link
-              href="/forgot-password"
-              className="text-xs text-muted-foreground underline underline-offset-4 hover:text-primary"
-            >
-              Esqueci minha senha
-            </Link>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading || isLocked}>
-            {isLocked
-              ? `Bloqueado (${lockCountdown}s)`
-              : loading
-              ? "Entrando…"
-              : "Entrar"}
-          </Button>
-        </form>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Não tem conta?{" "}
-          <Link href="/register" className="underline underline-offset-4 hover:text-primary">
-            Criar conta
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Link
+            href="/forgot-password"
+            style={{ fontSize: "12px", color: "rgba(237,237,234,0.30)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+          >
+            Esqueci minha senha
           </Link>
-        </p>
-      </div>
-    </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading || isLocked}
+          style={{
+            width: "100%",
+            background: loading || isLocked ? "rgba(237,237,234,0.35)" : "#ededea",
+            color: "#07080a",
+            padding: "11px 0",
+            borderRadius: "7px",
+            fontSize: "14px",
+            fontWeight: 600,
+            border: "none",
+            cursor: loading || isLocked ? "not-allowed" : "pointer",
+            fontFamily: "var(--font-sans)",
+            letterSpacing: "-0.2px",
+            marginTop: "4px",
+          }}
+        >
+          {isLocked ? `Bloqueado (${lockCountdown}s)` : loading ? "Entrando…" : "Entrar"}
+        </button>
+      </form>
+
+      <p style={{ marginTop: "28px", fontSize: "13px", color: "rgba(237,237,234,0.35)", textAlign: "center" }}>
+        Não tem conta?{" "}
+        <Link href="/register" style={{ color: "rgba(237,237,234,0.65)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          Criar conta
+        </Link>
+      </p>
+    </>
   );
 }

@@ -15,6 +15,7 @@ export interface Report {
   source_url: string;
   published_at: string;
   created_at: string;
+  metrics: Record<string, number | string | null> | null;
 }
 
 export interface UserProfile {

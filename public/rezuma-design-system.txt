@@ -1,0 +1,99 @@
+REZUMA — DESIGN SYSTEM
+======================
+
+
+PALETA DE CORES
+---------------
+
+Fundo principal
+  #07080a
+  Uso: background de todas as páginas e telas do app
+
+Superfície / cards
+  #0d0f11
+  Uso: fundo de cards, painéis, popovers, dropdowns
+
+Borda padrão
+  rgba(237, 237, 234, 0.07)
+  Uso: divisores, bordas sutis entre seções e componentes
+
+Borda forte
+  rgba(237, 237, 234, 0.12)
+  Uso: bordas de ênfase, separadores mais visíveis
+
+Texto primário
+  #ededea
+  Uso: títulos, tickers, dados principais, qualquer texto de destaque
+
+Texto secundário
+  rgba(237, 237, 234, 0.40)
+  Uso: corpo de texto, parágrafos, descrições
+
+Texto terciário
+  rgba(237, 237, 234, 0.18)
+  Uso: labels, metadados, datas, informações de suporte
+
+Accent
+  #5eb88a
+  Uso: dados financeiros positivos (variação positiva, dividendo confirmado),
+       badges de destaque, link ativo na navegação, indicadores de novo relatório.
+       Usar com parcimônia — máximo um elemento accent por bloco visual.
+
+Accent fundo (dim)
+  rgba(94, 184, 138, 0.12)
+  Uso: fundo de badges e pills que usam o accent
+
+Accent borda
+  rgba(94, 184, 138, 0.25)
+  Uso: borda de badges e pills que usam o accent
+
+
+TIPOGRAFIA
+----------
+
+Space Grotesk
+  Google Fonts: https://fonts.google.com/specimen/Space+Grotesk
+  Pesos usados: 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
+
+  Uso:
+    Navegação e labels         12px / weight 500
+    Corpo de texto             13px / weight 400 / line-height 1.75
+    Subtítulos e seções        13px / weight 600
+    Títulos de página          18px / weight 600 / letter-spacing -0.3px
+    Wordmark do logo           24px / weight 700 / letter-spacing -0.7px
+
+
+Space Mono
+  Google Fonts: https://fonts.google.com/specimen/Space+Mono
+  Pesos usados: 400 (regular), 700 (bold)
+
+  Uso:
+    Tickers (KNRI11, VALE3)    38px / weight 700 / letter-spacing -1.5px
+    Números e métricas         20px / weight 700 / letter-spacing -0.8px
+    Variações percentuais      13px / weight 700
+    Metadados técnicos         10px / weight 400 / letter-spacing 0.3px
+    Breadcrumbs                11px / weight 400
+
+
+LOGO
+----
+
+Símbolo: três linhas horizontais de larguras decrescentes (22px, 14px, 7px),
+altura 2.5px, alinhadas à esquerda, gap de 6px entre cada linha.
+Representa a compressão de documentos extensos em resumo essencial.
+
+Wordmark: "rezuma" em caixa baixa, Space Grotesk 700, letter-spacing -0.7px.
+
+Arquivos disponíveis em /public:
+  logo.svg          lockup horizontal, fundo escuro (texto #ededea)
+  logo-dark.svg     lockup horizontal, fundo claro (texto #0d0d0e)
+  logo-symbol.svg   apenas o símbolo
+
+
+REGRAS GERAIS
+-------------
+
+O accent (#5eb88a) é o único toque de cor no sistema.
+Nunca usar mais de um elemento accent por bloco visual.
+Animações dentro do app devem ser sutis e funcionais, sem decoração.
+Layout interno usa coluna esquerda estreita (dados) + coluna direita larga (análise).

@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import Link from "next/link";
-import { LogOut, LayoutDashboard, Briefcase, Settings } from "lucide-react";
+import { AppTopNav } from "./_components/top-nav";
 
 async function getUser() {
   const cookieStore = await cookies();
@@ -11,9 +10,7 @@ async function getUser() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
+        getAll() { return cookieStore.getAll(); },
         setAll() {},
       },
     }
@@ -27,56 +24,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-56 border-r bg-muted/30 flex flex-col py-6 px-4 gap-2">
-        <div className="text-lg font-bold tracking-tight mb-6 px-2">Rezuma</div>
-
-        <nav className="flex flex-col gap-1 flex-1">
-          <NavLink href="/dashboard" icon={<LayoutDashboard size={16} />}>
-            Dashboard
-          </NavLink>
-          <NavLink href="/assets" icon={<Briefcase size={16} />}>
-            Meus Ativos
-          </NavLink>
-          <NavLink href="/settings" icon={<Settings size={16} />}>
-            Configurações
-          </NavLink>
-        </nav>
-
-        <form action="/api/auth/signout" method="post">
-          <button
-            type="submit"
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-1.5 rounded-md hover:bg-muted"
-          >
-            <LogOut size={16} />
-            Sair
-          </button>
-        </form>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#07080a", fontFamily: "var(--font-sans)" }}>
+      <AppTopNav />
+      <main style={{ flex: 1, padding: "48px 36px", maxWidth: "900px", width: "100%", margin: "0 auto" }}>
+        {children}
+      </main>
     </div>
-  );
-}
-
-function NavLink({
-  href,
-  icon,
-  children,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted"
-    >
-      {icon}
-      {children}
-    </Link>
   );
 }

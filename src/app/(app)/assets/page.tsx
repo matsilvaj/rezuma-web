@@ -4,9 +4,21 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { assetsApi } from "@/lib/api";
 import { Asset } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Trash2, Search, Check } from "lucide-react";
+
+const S = {
+  textP:   "#ededea",
+  textS:   "rgba(237,237,234,0.55)",
+  textT:   "rgba(237,237,234,0.22)",
+  border:  "rgba(237,237,234,0.07)",
+  borderS: "rgba(237,237,234,0.10)",
+  accent:  "#5eb88a",
+  accentD: "rgba(94,184,138,0.10)",
+  accentB: "rgba(94,184,138,0.22)",
+  danger:  "rgba(237,80,60,0.70)",
+  dangerD: "rgba(237,80,60,0.08)",
+  mono:    "var(--font-mono)",
+  sans:    "var(--font-sans)",
+} as const;
 
 interface Suggestion {
   ticker: string;
@@ -19,17 +31,16 @@ function sanitizeQuery(raw: string): string {
 }
 
 export default function AssetsPage() {
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-
-  const [adding, setAdding] = useState<string | null>(null);
-  const [pendingRemove, setPendingRemove] = useState<string | null>(null);
-  const [removing, setRemoving] = useState<string | null>(null);
+  const [assets,       setAssets]       = useState<Asset[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [query,        setQuery]        = useState("");
+  const [suggestions,  setSuggestions]  = useState<Suggestion[]>([]);
+  const [searchLoad,   setSearchLoad]   = useState(false);
+  const [showDrop,     setShowDrop]     = useState(false);
+  const [adding,       setAdding]       = useState<string | null>(null);
+  const [pendingRemove,setPendingRemove]= useState<string | null>(null);
+  const [removing,     setRemoving]     = useState<string | null>(null);
+  const [inputFocused, setInputFocused] = useState(false);
 
   async function loadAssets() {
     setLoading(true);
@@ -43,55 +54,42 @@ export default function AssetsPage() {
     }
   }
 
-  useEffect(() => {
-    loadAssets();
-  }, []);
+  useEffect(() => { loadAssets(); }, []);
 
   const search = useCallback(async (q: string) => {
-    if (q.length < 2) {
-      setSuggestions([]);
-      setShowDropdown(false);
-      return;
-    }
-    setSearchLoading(true);
+    if (q.length < 2) { setSuggestions([]); setShowDrop(false); return; }
+    setSearchLoad(true);
     try {
       const data = await assetsApi.search(q);
       setSuggestions(data ?? []);
-      setShowDropdown(true);
+      setShowDrop(true);
     } catch {
       setSuggestions([]);
     } finally {
-      setSearchLoading(false);
+      setSearchLoad(false);
     }
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const t = setTimeout(() => {
       const clean = sanitizeQuery(query);
       if (clean.length >= 2) search(clean);
-      else {
-        setSuggestions([]);
-        setShowDropdown(false);
-      }
+      else { setSuggestions([]); setShowDrop(false); }
     }, 300);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(t);
   }, [query, search]);
 
   async function handleAdd(ticker: string) {
     setAdding(ticker);
-    setShowDropdown(false);
+    setShowDrop(false);
     setQuery("");
     try {
       await assetsApi.add(ticker);
       await loadAssets();
-      toast.success(`${ticker} adicionado à sua carteira.`);
+      toast.success(`${ticker} adicionado.`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
-      if (msg.toLowerCase().includes("já")) {
-        toast.error("Este ativo já está na sua lista.");
-      } else {
-        toast.error("Erro ao adicionar ativo.");
-      }
+      toast.error(msg.toLowerCase().includes("já") ? "Ativo já está na sua lista." : "Erro ao adicionar ativo.");
     } finally {
       setAdding(null);
     }
@@ -102,7 +100,7 @@ export default function AssetsPage() {
       doRemove(id, ticker);
     } else {
       setPendingRemove(id);
-      setTimeout(() => setPendingRemove((prev) => (prev === id ? null : prev)), 3000);
+      setTimeout(() => setPendingRemove(prev => prev === id ? null : prev), 3000);
     }
   }
 
@@ -111,8 +109,8 @@ export default function AssetsPage() {
     setRemoving(id);
     try {
       await assetsApi.remove(id);
-      setAssets((prev) => prev.filter((a) => a.id !== id));
-      toast.success(`${ticker} removido da sua carteira.`);
+      setAssets(prev => prev.filter(a => a.id !== id));
+      toast.success(`${ticker} removido.`);
     } catch {
       toast.error("Erro ao remover ativo.");
     } finally {
@@ -120,69 +118,125 @@ export default function AssetsPage() {
     }
   }
 
-  const addedTickers = new Set(assets.map((a) => a.ticker));
+  const addedTickers = new Set(assets.map(a => a.ticker));
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Meus Ativos</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Gerencie os ativos que você quer monitorar.
+    <div style={{ maxWidth: "600px" }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: "40px" }}>
+        <p style={{ fontFamily: S.mono, fontSize: "10px", letterSpacing: "2px", color: S.textT, textTransform: "uppercase", marginBottom: "10px" }}>
+          meus ativos
+        </p>
+        <h1 style={{ fontFamily: S.sans, fontSize: "22px", fontWeight: 700, color: S.textP, letterSpacing: "-0.5px" }}>
+          Carteira monitorada
+        </h1>
+        <p style={{ fontFamily: S.sans, fontSize: "13px", color: S.textS, marginTop: "4px" }}>
+          Adicione os ativos que quer acompanhar. Você recebe um resumo quando novos relatórios chegam.
         </p>
       </div>
 
-      <div className="space-y-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <Input
-            className="pl-9"
-            placeholder="Buscar ativo (ex: PETR4, HGLG11…)"
+      {/* Search */}
+      <div style={{ position: "relative", marginBottom: "32px" }}>
+        <div style={{ position: "relative" }}>
+          <input
+            type="text"
+            placeholder="Buscar ativo — PETR4, HGLG11…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+            maxLength={8}
             autoComplete="off"
             spellCheck={false}
-            maxLength={8}
+            onChange={e => setQuery(e.target.value)}
+            onFocus={() => { setInputFocused(true); if (suggestions.length > 0) setShowDrop(true); }}
+            onBlur={() => { setInputFocused(false); setTimeout(() => setShowDrop(false), 150); }}
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              background: "#0d0f11",
+              border: `1px solid ${inputFocused ? "rgba(237,237,234,0.18)" : S.border}`,
+              borderRadius: "8px",
+              padding: "11px 40px 11px 14px",
+              fontFamily: S.mono,
+              fontSize: "13px",
+              color: S.textP,
+              outline: "none",
+              transition: "border-color 0.15s",
+            }}
           />
+          <div style={{
+            position: "absolute",
+            right: "14px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            fontFamily: S.mono,
+            fontSize: "10px",
+            color: S.textT,
+          }}>
+            {searchLoad ? "…" : "↵"}
+          </div>
         </div>
 
-        {showDropdown && (searchLoading || suggestions.length > 0) && (
-          <div
-            role="listbox"
-            aria-label="Sugestões de ativos"
-            className="border rounded-md overflow-hidden bg-background shadow-sm"
-          >
-            {searchLoading && (
-              <p className="text-xs text-muted-foreground px-3 py-2">Buscando…</p>
+        {/* Dropdown */}
+        {showDrop && (searchLoad || suggestions.length > 0) && (
+          <div style={{
+            position: "absolute",
+            top: "calc(100% + 4px)",
+            left: 0,
+            right: 0,
+            background: "#0d0f11",
+            border: `1px solid ${S.borderS}`,
+            borderRadius: "8px",
+            overflow: "hidden",
+            zIndex: 50,
+          }}>
+            {searchLoad && (
+              <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, padding: "12px 14px" }}>
+                buscando…
+              </p>
             )}
-            {!searchLoading && suggestions.length === 0 && (
-              <p className="text-xs text-muted-foreground px-3 py-2">Nenhum resultado.</p>
+            {!searchLoad && suggestions.length === 0 && (
+              <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, padding: "12px 14px" }}>
+                nenhum resultado
+              </p>
             )}
-            {suggestions.map((s) => {
-              const alreadyAdded = addedTickers.has(s.ticker);
+            {suggestions.map(s => {
+              const already = addedTickers.has(s.ticker);
               return (
                 <button
                   key={s.ticker}
-                  role="option"
-                  aria-selected={alreadyAdded}
-                  onMouseDown={() => !alreadyAdded && handleAdd(s.ticker)}
-                  disabled={adding === s.ticker || alreadyAdded}
-                  className="flex items-center justify-between w-full px-3 py-2 text-sm transition-colors hover:bg-muted disabled:cursor-default disabled:hover:bg-transparent"
+                  onMouseDown={() => !already && handleAdd(s.ticker)}
+                  disabled={adding === s.ticker || already}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    padding: "11px 14px",
+                    background: "transparent",
+                    border: "none",
+                    borderTop: `1px solid ${S.border}`,
+                    cursor: already ? "default" : "pointer",
+                    textAlign: "left",
+                  }}
                 >
-                  <span>
-                    <span className="font-mono font-semibold">{s.ticker}</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontFamily: S.mono, fontSize: "13px", fontWeight: 700, color: S.textP }}>
+                      {s.ticker}
+                    </span>
                     {s.name && s.name !== s.ticker && (
-                      <span className="ml-2 text-muted-foreground">{s.name}</span>
+                      <span style={{ fontFamily: S.sans, fontSize: "12px", color: S.textS }}>
+                        {s.name}
+                      </span>
+                    )}
+                    {s.type && (
+                      <span style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, border: `1px solid ${S.border}`, borderRadius: "4px", padding: "1px 6px", letterSpacing: "0.4px" }}>
+                        {s.type === "fii" ? "FII" : "AÇÃO"}
+                      </span>
                     )}
                   </span>
-                  {alreadyAdded ? (
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Check size={12} /> Adicionado
-                    </span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">+ Adicionar</span>
-                  )}
+                  <span style={{ fontFamily: S.mono, fontSize: "10px", color: already ? S.textT : S.accent }}>
+                    {already ? "adicionado" : "+ adicionar"}
+                  </span>
                 </button>
               );
             })}
@@ -190,59 +244,95 @@ export default function AssetsPage() {
         )}
       </div>
 
-      {loading && <p className="text-sm text-muted-foreground">Carregando…</p>}
+      {/* Loading */}
+      {loading && (
+        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "1px" }}>
+          carregando…
+        </p>
+      )}
 
+      {/* Empty state */}
       {!loading && assets.length === 0 && (
-        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          Nenhum ativo adicionado. Use a busca acima para adicionar.
+        <div style={{ border: `1px dashed ${S.border}`, borderRadius: "10px", padding: "48px 32px", textAlign: "center" }}>
+          <p style={{ fontFamily: S.sans, fontSize: "14px", color: S.textT, lineHeight: 1.7 }}>
+            Nenhum ativo adicionado ainda.<br />
+            Use a busca acima para encontrar o que você acompanha.
+          </p>
         </div>
       )}
 
+      {/* Asset list */}
       {!loading && assets.length > 0 && (
-        <div className="space-y-2">
-          {assets.map((asset) => {
-            const isPending = pendingRemove === asset.id;
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {assets.map((asset, i) => {
+            const isPending  = pendingRemove === asset.id;
             const isRemoving = removing === asset.id;
+
             return (
               <div
                 key={asset.id}
-                className="flex items-center justify-between rounded-lg border px-4 py-3"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "16px 0",
+                  borderBottom: i < assets.length - 1 ? `1px solid ${S.border}` : "none",
+                  opacity: isRemoving ? 0.4 : 1,
+                  transition: "opacity 0.2s",
+                }}
               >
-                <div className="flex items-center gap-3">
-                  <span className="font-mono font-semibold text-sm">{asset.ticker}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ fontFamily: S.mono, fontSize: "15px", fontWeight: 700, color: S.textP, letterSpacing: "-0.5px" }}>
+                    {asset.ticker}
+                  </span>
                   {asset.name && asset.name !== asset.ticker && (
-                    <span className="text-sm text-muted-foreground">{asset.name}</span>
+                    <span style={{ fontFamily: S.sans, fontSize: "12px", color: S.textS }}>
+                      {asset.name}
+                    </span>
                   )}
                   {asset.type && (
-                    <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                      {asset.type === "fii" ? "FII" : "Ação"}
+                    <span style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, border: `1px solid ${S.border}`, borderRadius: "4px", padding: "1px 6px", letterSpacing: "0.4px" }}>
+                      {asset.type === "fii" ? "FII" : "AÇÃO"}
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   {isPending && (
-                    <span className="text-xs text-destructive">Clique para confirmar</span>
+                    <span style={{ fontFamily: S.mono, fontSize: "10px", color: S.danger }}>
+                      confirmar?
+                    </span>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <button
                     disabled={isRemoving}
                     onClick={() => handleRemoveClick(asset.id, asset.ticker)}
                     aria-label={isPending ? `Confirmar remoção de ${asset.ticker}` : `Remover ${asset.ticker}`}
-                    className={`h-8 w-8 transition-colors ${
-                      isPending
-                        ? "text-destructive hover:text-destructive hover:bg-destructive/10"
-                        : "text-muted-foreground hover:text-destructive"
-                    }`}
+                    style={{
+                      fontFamily: S.mono,
+                      fontSize: "10px",
+                      color: isPending ? S.danger : S.textT,
+                      background: isPending ? S.dangerD : "transparent",
+                      border: `1px solid ${isPending ? "rgba(237,80,60,0.20)" : S.border}`,
+                      borderRadius: "5px",
+                      padding: "4px 10px",
+                      cursor: isRemoving ? "default" : "pointer",
+                      letterSpacing: "0.3px",
+                    }}
                   >
-                    <Trash2 size={14} />
-                  </Button>
+                    {isRemoving ? "…" : "remover"}
+                  </button>
                 </div>
               </div>
             );
           })}
         </div>
+      )}
+
+      {/* Asset count */}
+      {!loading && assets.length > 0 && (
+        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, marginTop: "24px" }}>
+          {assets.length} ativo{assets.length !== 1 ? "s" : ""} monitorado{assets.length !== 1 ? "s" : ""}
+        </p>
       )}
     </div>
   );
