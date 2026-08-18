@@ -93,46 +93,33 @@ interface ParsedSummary {
   destaque:      string;
   quote:         string | null;
   movimentacoes: string;
-  risco:         string;
 }
 
 function parseSummary(summary: string): ParsedSummary {
-  // Structured format with DESTAQUE: / MOVIMENTAÇÕES: markers
-  const dm = summary.match(/^DESTAQUE:\s*([\s\S]*?)(?=\n*MOVIMENTAÇÕES:|$)/m);
-  const mm = summary.match(/MOVIMENTAÇÕES:\s*([\s\S]*)$/m);
+  const dm = summary.match(/^DESTAQUE:\s*([\s\S]*?)(?=\n*MOVIMENTA|$)/mi);
+  const mm = summary.match(/MOVIMENTA[ÇC][OÕ]ES:\s*([\s\S]*)$/mi);
 
   if (dm && mm) {
     const destaqueRaw = dm[1].trim();
     const movRaw      = mm[1].trim();
 
-    // Extract > blockquote line from destaque block
     const dLines  = destaqueRaw.split("\n");
     const quoteL  = dLines.find(l => l.trim().startsWith(">"));
     const quote   = quoteL ? quoteL.trim().replace(/^>\s*/, "") : null;
-    const destaque = dLines.filter(l => !l.trim().startsWith(">")).join("\n").trim();
+    const destaque = dLines.filter(l => !l.trim().startsWith(">")).join(" ").trim();
 
-    // Extract ⚠️ from end of movimentacoes prose
-    const riscoM  = movRaw.match(/⚠️\s*([\s\S]+)$/m);
-    const risco   = riscoM ? riscoM[1].trim() : "";
-    const movFinal = movRaw.replace(/⚠️[\s\S]+$/m, "").trim();
+    const movimentacoes = movRaw.trim();
 
-    return { destaque, quote, movimentacoes: movFinal, risco };
+    return { destaque, quote, movimentacoes };
   }
 
-  // Legacy fallback: split by blank lines
-  const lines = summary.split("\n");
-  let start = 0;
-  if (/^[📊📈🔔]/.test(lines[0] ?? "")) {
-    start = 1;
-    while (start < lines.length && !lines[start]?.trim()) start++;
-  }
-  const rest   = lines.slice(start).join("\n").trim();
-  const blocks = rest.split(/\n\n+/).map(b => b.trim()).filter(Boolean);
-  const ri     = blocks.findIndex(b => b.startsWith("⚠️"));
-  const risco  = ri >= 0 ? blocks[ri]!.replace(/^⚠️\s*/, "") : "";
-  const destaque      = blocks[0] ?? rest;
-  const movimentacoes = blocks.slice(1).filter((_, i) => ri < 0 || i + 1 !== ri).join("\n\n");
-  return { destaque, quote: null, movimentacoes, risco };
+  // Fallback para relatórios gerados antes do novo formato
+  const blocks = summary.split(/\n\n+/).map(b => b.trim()).filter(Boolean);
+  return {
+    destaque: blocks[0] ?? summary,
+    quote: null,
+    movimentacoes: blocks.slice(1).join("\n\n"),
+  };
 }
 
 // ── Metrics ────────────────────────────────────────────────────────────────
@@ -364,11 +351,11 @@ export default function DashboardPage() {
             {/* Blockquote callout */}
             {parsed.quote && (
               <div style={{
-                borderLeft: `2px solid rgba(237,237,234,0.18)`,
+                borderLeft: `2px solid rgba(94,184,138,0.35)`,
                 paddingLeft: "16px",
                 marginTop: "16px",
               }}>
-                <p style={{ fontFamily: S.sans, fontSize: "13px", color: "rgba(237,237,234,0.45)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>
+                <p style={{ fontFamily: S.sans, fontSize: "13px", color: "rgba(237,237,234,0.40)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>
                   <RichText text={parsed.quote} />
                 </p>
               </div>
@@ -382,30 +369,9 @@ export default function DashboardPage() {
               <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.6px", textTransform: "uppercase" as const, color: S.textT, fontWeight: 600, marginBottom: "12px" }}>
                 Movimentações
               </div>
-              {/* Render as prose paragraphs */}
-              {parsed.movimentacoes.split(/\n\n+/).map((para, i) => {
-                const clean = para.replace(/^[•→📌💰]\s*/gm, "").trim();
-                if (!clean) return null;
-                return (
-                  <p key={i} style={{ fontFamily: S.sans, fontSize: "14px", color: S.textS, lineHeight: 1.85, margin: 0, marginBottom: i < parsed.movimentacoes.split(/\n\n+/).length - 1 ? "12px" : "0" }}>
-                    <RichText text={clean} />
-                  </p>
-                );
-              })}
-            </div>
-          )}
-
-          {/* ATENÇÃO */}
-          {parsed.risco && (
-            <div style={{ marginBottom: "24px" }}>
-              <div style={{ background: "rgba(237,80,50,0.06)", border: "1px solid rgba(237,80,50,0.14)", borderRadius: "6px", padding: "12px 14px" }}>
-                <span style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.4px", textTransform: "uppercase" as const, color: "rgba(237,100,80,0.60)", fontWeight: 600 }}>
-                  Atenção
-                </span>
-                <p style={{ fontFamily: S.sans, fontSize: "13px", color: "rgba(237,150,130,0.75)", lineHeight: 1.7, marginTop: "6px", margin: "6px 0 0" }}>
-                  <RichText text={parsed.risco} />
-                </p>
-              </div>
+              <p style={{ fontFamily: S.sans, fontSize: "14px", color: S.textS, lineHeight: 1.85, margin: 0 }}>
+                <RichText text={parsed.movimentacoes} />
+              </p>
             </div>
           )}
 
@@ -442,18 +408,18 @@ export default function DashboardPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "40px", marginTop: "40px", borderTop: `1px solid ${S.border}` }}>
         <button
           onClick={prev} disabled={index === 0} aria-label="Relatório anterior"
-          style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: S.mono, fontSize: "10px", color: index === 0 ? S.textT : "rgba(237,237,234,0.35)", background: "transparent", border: `1px solid ${index === 0 ? "transparent" : S.borderS}`, borderRadius: "6px", padding: "7px 14px", cursor: index === 0 ? "default" : "pointer", opacity: index === 0 ? 0.3 : 1, letterSpacing: "0.3px" }}
+          style={{ fontFamily: S.mono, fontSize: "10px", color: index === 0 ? S.textT : "rgba(237,237,234,0.35)", background: "transparent", border: "none", padding: "0", cursor: index === 0 ? "default" : "pointer", opacity: index === 0 ? 0.3 : 1, letterSpacing: "0.3px" }}
         >
-          ← anterior
+          relatório anterior
         </button>
         <span style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.3px" }}>
-          {index + 1} / {reports.length}
+          {index + 1} de {reports.length} relatórios
         </span>
         <button
           onClick={next} disabled={index === reports.length - 1} aria-label="Próximo relatório"
-          style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: S.mono, fontSize: "10px", color: index === reports.length - 1 ? S.textT : "rgba(237,237,234,0.35)", background: "transparent", border: `1px solid ${index === reports.length - 1 ? "transparent" : S.borderS}`, borderRadius: "6px", padding: "7px 14px", cursor: index === reports.length - 1 ? "default" : "pointer", opacity: index === reports.length - 1 ? 0.3 : 1, letterSpacing: "0.3px" }}
+          style={{ fontFamily: S.mono, fontSize: "10px", color: index === reports.length - 1 ? S.textT : "rgba(237,237,234,0.35)", background: "transparent", border: "none", padding: "0", cursor: index === reports.length - 1 ? "default" : "pointer", opacity: index === reports.length - 1 ? 0.3 : 1, letterSpacing: "0.3px" }}
         >
-          próximo →
+          próximo relatório
         </button>
       </div>
     </div>
