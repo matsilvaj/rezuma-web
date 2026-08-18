@@ -93,24 +93,25 @@ interface ParsedSummary {
   destaque:      string;
   quote:         string | null;
   movimentacoes: string;
+  atencao:       string | null;
 }
 
 function parseSummary(summary: string): ParsedSummary {
-  const dm = summary.match(/^DESTAQUE:\s*([\s\S]*?)(?=\n*MOVIMENTA|$)/mi);
-  const mm = summary.match(/MOVIMENTA[ÇC][OÕ]ES:\s*([\s\S]*)$/mi);
+  const dm = summary.match(/^DESTAQUE:\s*([\s\S]*?)(?=\n*MOVIMENTA)/mi);
+  const mm = summary.match(/MOVIMENTA[ÇC][OÕ]ES:\s*([\s\S]*?)(?=\n*ATEN[ÇC][AÃ]O:|$)/mi);
+  const am = summary.match(/ATEN[ÇC][AÃ]O:\s*([\s\S]*)$/mi);
 
   if (dm && mm) {
     const destaqueRaw = dm[1].trim();
     const movRaw      = mm[1].trim();
+    const atencaoRaw  = am ? am[1].trim() : null;
 
     const dLines  = destaqueRaw.split("\n");
     const quoteL  = dLines.find(l => l.trim().startsWith(">"));
     const quote   = quoteL ? quoteL.trim().replace(/^>\s*/, "") : null;
     const destaque = dLines.filter(l => !l.trim().startsWith(">")).join(" ").trim();
 
-    const movimentacoes = movRaw.trim();
-
-    return { destaque, quote, movimentacoes };
+    return { destaque, quote, movimentacoes: movRaw, atencao: atencaoRaw || null };
   }
 
   // Fallback para relatórios gerados antes do novo formato
@@ -119,6 +120,7 @@ function parseSummary(summary: string): ParsedSummary {
     destaque: blocks[0] ?? summary,
     quote: null,
     movimentacoes: blocks.slice(1).join("\n\n"),
+    atencao: null,
   };
 }
 
@@ -372,6 +374,20 @@ export default function DashboardPage() {
               <p style={{ fontFamily: S.sans, fontSize: "14px", color: S.textS, lineHeight: 1.85, margin: 0 }}>
                 <RichText text={parsed.movimentacoes} />
               </p>
+            </div>
+          )}
+
+          {/* ATENÇÃO */}
+          {parsed.atencao && (
+            <div style={{ marginBottom: "24px" }}>
+              <div style={{ background: "rgba(237,80,50,0.05)", border: "1px solid rgba(237,80,50,0.12)", borderRadius: "6px", padding: "12px 14px" }}>
+                <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.4px", textTransform: "uppercase" as const, color: "rgba(237,100,80,0.55)", fontWeight: 600, marginBottom: "6px" }}>
+                  Atenção
+                </div>
+                <p style={{ fontFamily: S.sans, fontSize: "13px", color: "rgba(237,150,130,0.70)", lineHeight: 1.7, margin: 0 }}>
+                  <RichText text={parsed.atencao} />
+                </p>
+              </div>
             </div>
           )}
 
