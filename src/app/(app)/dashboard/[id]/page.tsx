@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -19,6 +19,34 @@ const LABEL_STYLE = {
   color: S.textT,
   fontWeight: 600,
 };
+
+function BackLink() {
+  const [hover, setHover] = useState(false);
+  return (
+    <Link
+      href="/dashboard"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "7px",
+        fontFamily: S.mono,
+        fontSize: "10px",
+        letterSpacing: "0.3px",
+        color: hover ? "rgba(237,237,234,0.55)" : S.textT,
+        textDecoration: "none",
+        border: `1px solid ${hover ? S.borderS : S.border}`,
+        borderRadius: "6px",
+        padding: "6px 12px",
+        marginBottom: "22px",
+        background: hover ? "rgba(237,237,234,0.03)" : "transparent",
+      }}
+    >
+      <span aria-hidden="true">&#8592;</span> voltar
+    </Link>
+  );
+}
 
 export default function ReportDetailPage() {
   const params = useParams<{ id: string }>();
@@ -89,6 +117,8 @@ export default function ReportDetailPage() {
 
   return (
     <div style={{ maxWidth: "860px" }}>
+
+      <BackLink />
 
       {/* Breadcrumb header */}
       <div style={{ marginBottom: "20px" }}>
