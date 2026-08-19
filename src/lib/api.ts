@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase";
+import { Asset } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -50,8 +51,10 @@ export const assetsApi = {
     }),
   list: () =>
     apiFetch("/api/v1/assets/").then((r) => r?.assets ?? []),
-  add: (ticker: string) =>
-    apiFetch("/api/v1/assets/", { method: "POST", body: JSON.stringify({ ticker }) }).then((r) => r?.asset),
+  // Devolve a resposta inteira: alem do ativo, traz backfill_queued, que
+  // indica se o sistema foi buscar os relatorios dos ultimos 2 meses.
+  add: (ticker: string): Promise<{ asset: Asset; backfill_queued: boolean }> =>
+    apiFetch("/api/v1/assets/", { method: "POST", body: JSON.stringify({ ticker }) }),
   remove: (id: string) =>
     apiFetch(`/api/v1/assets/${id}`, { method: "DELETE" }),
 };

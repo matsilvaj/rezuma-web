@@ -84,9 +84,16 @@ export default function AssetsPage() {
     setShowDrop(false);
     setQuery("");
     try {
-      await assetsApi.add(ticker);
+      const res = await assetsApi.add(ticker);
       await loadAssets();
-      toast.success(`${ticker} adicionado.`);
+      if (res?.backfill_queued) {
+        toast.success(
+          `${ticker} adicionado. Buscando os relatórios dos últimos 2 meses, pode levar alguns minutos.`,
+          { duration: 8000 },
+        );
+      } else {
+        toast.success(`${ticker} adicionado.`);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       toast.error(msg.toLowerCase().includes("já") ? "Ativo já está na sua lista." : "Erro ao adicionar ativo.");
