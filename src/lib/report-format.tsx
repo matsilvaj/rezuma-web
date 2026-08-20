@@ -180,11 +180,18 @@ const METRIC_LABELS: Record<string, string> = {
   margem_liquida_percentual:"margem líquida",
   divida_liquida_ebitda:    "dívida líq./EBITDA",
   dividendo_por_acao:       "dividendo por ação",
+  patrimonio_liquido:       "patrimônio líquido",
+  roe_percentual:           "retorno sobre patrimônio",
+  indice_basileia:          "índice de Basileia",
+  indice_eficiencia_percentual: "índice de eficiência",
+  margem_financeira:        "margem financeira",
 };
 
 /** Métricas em que cair é a boa notícia. */
 const LOWER_IS_BETTER = new Set([
   "vacancia_percentual", "inadimplencia_percentual", "divida_liquida_ebitda",
+  // Eficiência bancária é despesa sobre receita: quanto menor, melhor
+  "indice_eficiencia_percentual",
 ]);
 
 /**
@@ -194,7 +201,10 @@ const LOWER_IS_BETTER = new Set([
 const AMBIGUOUS = new Set(["pvp"]);
 
 function isPercent(key: string): boolean {
-  return key.includes("percentual") || key === "dy_percentual" || key === "dy_anualizado";
+  return key.includes("percentual")
+    || key === "dy_percentual"
+    || key === "dy_anualizado"
+    || key === "indice_basileia";
 }
 
 /** 1 → "1", 1.5 → "1,5" — sem casa decimal inútil. */
@@ -220,17 +230,40 @@ function fmtMetric(key: string, value: number | string | null): string {
     return `${value.toFixed(1).replace(".", ",")}%`;
   if (key === "pvp" || key === "divida_liquida_ebitda")
     return `${value.toFixed(2).replace(".", ",")}x`;
-  if (["receita_liquida","lucro_liquido","ebitda","patrimonio_liquido"].includes(key))
+  if (["receita_liquida","lucro_liquido","ebitda","patrimonio_liquido","margem_financeira"].includes(key))
     return fmtMoney(value);
   return String(value);
 }
 
-const PRIORITY_METRICS = [
-  "rendimento_por_cota","dy_percentual","dy_anualizado",
-  "vacancia_percentual","pvp",
-  "lucro_liquido","receita_liquida","margem_liquida_percentual","divida_liquida_ebitda",
+/**
+ * A ordem certa depende do que o ativo é. Um banco não tem EBITDA nem margem
+ * relevante; tem ROE, inadimplência e Basileia. Uma empresa comum é o oposto.
+ * O tipo é deduzido das próprias métricas presentes, sem precisar consultar o
+ * catálogo: só banco reporta Basileia, só FII reporta vacância.
+ */
+const PRIORITY_FII = [
+  "rendimento_por_cota","dy_percentual","dy_anualizado","vacancia_percentual",
+  "pvp","valor_patrimonial_cota","inadimplencia_percentual","patrimonio_liquido",
+];
+
+const PRIORITY_BANCO = [
+  "lucro_liquido","roe_percentual","inadimplencia_percentual","indice_basileia",
+  "margem_financeira","indice_eficiencia_percentual","margem_liquida_percentual",
   "dividendo_por_acao",
 ];
+
+const PRIORITY_EMPRESA = [
+  "lucro_liquido","receita_liquida","margem_liquida_percentual","divida_liquida_ebitda",
+  "margem_ebitda_percentual","ebitda","roe_percentual","dividendo_por_acao",
+];
+
+function pickPriority(m: Record<string, number | string | null>): string[] {
+  if (m.rendimento_por_cota != null || m.vacancia_percentual != null || m.pvp != null)
+    return PRIORITY_FII;
+  if (m.indice_basileia != null || m.indice_eficiencia_percentual != null || m.margem_financeira != null)
+    return PRIORITY_BANCO;
+  return PRIORITY_EMPRESA;
+}
 
 export interface MetricVariation {
   /** Ex: "▲ 3,5%" ou "▼ 0,3 p.p." */
@@ -283,7 +316,7 @@ export function topMetrics(
   previous?: Record<string, number | string | null> | null,
 ): MetricItem[] {
   const result: MetricItem[] = [];
-  for (const key of PRIORITY_METRICS) {
+  for (const key of pickPriority(m)) {
     if (m[key] !== null && m[key] !== undefined) {
       const fmt = fmtMetric(key, m[key]!);
       if (fmt) {
@@ -305,16 +338,43 @@ export const METRIC_SIZES = [22, 18, 16, 14];
 
 
 /**
- * Relatório anterior do mesmo ativo e do mesmo tipo de documento — comparar
- * trimestre com trimestre, mês com mês. A lista chega ordenada do mais
- * recente para o mais antigo, então o primeiro que casar já é o anterior.
+ * Período de referência do relatório, para saber o que ele cobre.
+ * Prefere o campo que a IA extraiu do documento; cai no período do título.
+ */
+export function periodKey(report: Report): string | null {
+  const m = report.metrics ?? {};
+  const ref = m.trimestre_referencia ?? m.ano_referencia ?? m.mes_referencia;
+  if (typeof ref === "string" && ref.trim()) return ref.trim().toLowerCase();
+  return periodTag(report.title);
+}
+
+/**
+ * Relatório do período ANTERIOR do mesmo ativo e mesmo tipo de documento.
+ *
+ * O período diferente é a parte que importa: uma empresa publica vários
+ * documentos sobre o mesmo trimestre (release, análise de desempenho,
+ * balanço), e comparar 2T26 com 2T26 não significa nada. Quando o período não
+ * é conhecido dos dois lados, exige ao menos meses distintos.
+ *
+ * A lista chega ordenada do mais recente para o mais antigo, então o primeiro
+ * que casar já é o anterior.
  */
 export function findPreviousReport(reports: Report[], current: Report): Report | undefined {
-  const t = new Date(current.published_at).getTime();
-  return reports.find(r =>
-    r.id !== current.id &&
-    r.ticker === current.ticker &&
-    r.document_type === current.document_type &&
-    new Date(r.published_at).getTime() < t
-  );
+  const t = new Date(current.published_at);
+  const periodoAtual = periodKey(current);
+
+  return reports.find(r => {
+    if (r.id === current.id) return false;
+    if (r.ticker !== current.ticker) return false;
+    if (r.document_type !== current.document_type) return false;
+
+    const d = new Date(r.published_at);
+    if (d.getTime() >= t.getTime()) return false;
+
+    const periodoAnterior = periodKey(r);
+    if (periodoAtual && periodoAnterior) return periodoAnterior !== periodoAtual;
+
+    // Sem período declarado, mês diferente é a melhor aproximação disponível
+    return d.getMonth() !== t.getMonth() || d.getFullYear() !== t.getFullYear();
+  });
 }

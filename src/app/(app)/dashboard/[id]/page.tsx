@@ -9,7 +9,7 @@ import { markRead } from "@/lib/read-state";
 import {
   S, RichText, fmtDate, relativeLabel,
   extractPeriod, shortPeriod, docTypeLabel, parseSummary, topMetrics, METRIC_SIZES,
-  findPreviousReport,
+  findPreviousReport, periodKey,
 } from "@/lib/report-format";
 
 const LABEL_STYLE = {
@@ -116,7 +116,7 @@ export default function ReportDetailPage() {
   const anterior  = findPreviousReport(reports, report);
   const metrics   = report.metrics ? topMetrics(report.metrics, anterior?.metrics) : [];
   const compara   = metrics.some(m => m.variation) && anterior
-    ? shortPeriod(anterior.title, anterior.document_type ?? "")
+    ? periodKey(anterior) ?? shortPeriod(anterior.title, anterior.document_type ?? "")
     : null;
   const glossary  = report.glossary ?? [];
 
