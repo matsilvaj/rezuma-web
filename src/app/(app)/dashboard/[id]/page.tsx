@@ -9,6 +9,7 @@ import { markRead } from "@/lib/read-state";
 import {
   S, RichText, fmtDate, relativeLabel, normalizeDocType,
   extractPeriod, shortPeriod, parseSummary, topMetrics, METRIC_SIZES,
+  findPreviousReport,
 } from "@/lib/report-format";
 
 const LABEL_STYLE = {
@@ -112,7 +113,11 @@ export default function ReportDetailPage() {
     ? period ? `${compName} - ${period}` : compName
     : period ?? report.title;
   const parsed    = parseSummary(report.summary);
-  const metrics   = report.metrics ? topMetrics(report.metrics) : [];
+  const anterior  = findPreviousReport(reports, report);
+  const metrics   = report.metrics ? topMetrics(report.metrics, anterior?.metrics) : [];
+  const compara   = metrics.some(m => m.variation) && anterior
+    ? shortPeriod(anterior.title, anterior.document_type ?? "")
+    : null;
   const glossary  = report.glossary ?? [];
 
   return (
@@ -149,23 +154,48 @@ export default function ReportDetailPage() {
               {period ? period.replace("resultado do ", "") : docType}
             </div>
 
-            {metrics.map((m, i) => (
-              <div key={m.key} style={{ marginBottom: i < metrics.length - 1 ? "16px" : "0" }}>
-                <div style={{
-                  fontFamily: S.mono,
-                  fontSize: `${METRIC_SIZES[i] ?? 14}px`,
-                  fontWeight: 700,
-                  color: m.accent ? S.accent : S.textP,
-                  letterSpacing: i === 0 ? "-1px" : "-0.5px",
-                  lineHeight: 1,
-                }}>
-                  {m.value}
-                </div>
-                <div style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, letterSpacing: "0.2px", marginTop: "4px" }}>
-                  {m.label}
-                </div>
+            {compara && (
+              <div style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, letterSpacing: "0.4px", marginBottom: "14px" }}>
+                variação vs {compara}
               </div>
-            ))}
+            )}
+
+            {metrics.map((m, i) => {
+              // Verde e vermelho só quando a variação diz algo: sem período
+              // anterior, ou em métrica sem direção óbvia, o número fica neutro
+              const cor =
+                m.variation?.better === true  ? S.accent :
+                m.variation?.better === false ? "rgba(237,120,100,0.92)" :
+                S.textP;
+              return (
+                <div key={m.key} style={{ marginBottom: i < metrics.length - 1 ? "16px" : "0" }}>
+                  <div style={{
+                    fontFamily: S.mono,
+                    fontSize: `${METRIC_SIZES[i] ?? 14}px`,
+                    fontWeight: 700,
+                    color: cor,
+                    letterSpacing: i === 0 ? "-1px" : "-0.5px",
+                    lineHeight: 1,
+                  }}>
+                    {m.value}
+                  </div>
+                  <div style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, letterSpacing: "0.2px", marginTop: "4px" }}>
+                    {m.label}
+                  </div>
+                  {m.variation && (
+                    <div style={{
+                      fontFamily: S.mono,
+                      fontSize: "9px",
+                      color: m.variation.better === null ? S.textT : cor,
+                      opacity: m.variation.better === null ? 1 : 0.85,
+                      marginTop: "3px",
+                    }}>
+                      {m.variation.label}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: "16px", marginTop: "28px" }}>

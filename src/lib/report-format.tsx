@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
+import { Report } from "@/types";
 
 /**
  * Formatação e parsing compartilhados entre a lista de relatórios
@@ -143,7 +144,7 @@ export function parseSummary(summary: string): ParsedSummary {
   };
 }
 
-// ── Metrics ────────────────────────────────────────────────────────────────
+// ── Metrics ───────────────────────────────────────────────────────────────
 
 const METRIC_LABELS: Record<string, string> = {
   rendimento_por_cota:      "rend. distribuível por cota",
@@ -162,27 +163,46 @@ const METRIC_LABELS: Record<string, string> = {
   dividendo_por_acao:       "dividendo por ação",
 };
 
-// Métricas em que um valor maior é diretamente favorável ao investidor
-const ACCENT_METRICS = new Set([
-  "rendimento_por_cota", "dy_percentual", "dy_anualizado",
-  "dividendo_por_acao",  "margem_liquida_percentual", "margem_ebitda_percentual",
+/** Métricas em que cair é a boa notícia. */
+const LOWER_IS_BETTER = new Set([
+  "vacancia_percentual", "inadimplencia_percentual", "divida_liquida_ebitda",
 ]);
+
+/**
+ * Métricas sem direção óbvia: P/VP caindo tanto pode ser oportunidade quanto
+ * o mercado precificando risco. Sem cor, para não afirmar o que não se sabe.
+ */
+const AMBIGUOUS = new Set(["pvp"]);
+
+function isPercent(key: string): boolean {
+  return key.includes("percentual") || key === "dy_percentual" || key === "dy_anualizado";
+}
+
+/** 1 → "1", 1.5 → "1,5" — sem casa decimal inútil. */
+function dec1(n: number): string {
+  return n.toFixed(1).replace(/\.0$/, "").replace(".", ",");
+}
+
+function fmtMoney(value: number): string {
+  const abs = Math.abs(value);
+  const sinal = value < 0 ? "-" : "";
+  if (abs >= 1e9) return `${sinal}R$${dec1(abs / 1e9)}bi`;
+  if (abs >= 1e6) return `${sinal}R$${dec1(abs / 1e6)}mi`;
+  if (abs >= 1e3) return `${sinal}R$${(abs / 1e3).toFixed(0)} mil`;
+  return `${sinal}R$${abs.toFixed(0)}`;
+}
 
 function fmtMetric(key: string, value: number | string | null): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value;
   if (key.includes("rendimento") || key.includes("valor_patrimonial") || key === "dividendo_por_acao")
     return `R$${value.toFixed(2).replace(".", ",")}`;
-  if (key.includes("percentual") || key === "dy_percentual" || key === "dy_anualizado")
+  if (isPercent(key))
     return `${value.toFixed(1).replace(".", ",")}%`;
   if (key === "pvp" || key === "divida_liquida_ebitda")
     return `${value.toFixed(2).replace(".", ",")}x`;
-  if (["receita_liquida","lucro_liquido","ebitda"].includes(key)) {
-    const abs = Math.abs(value);
-    if (abs >= 1e9) return `R$${(value / 1e9).toFixed(1).replace(".", ",")}bi`;
-    if (abs >= 1e6) return `R$${(value / 1e6).toFixed(0)}mi`;
-    return `R$${value.toFixed(0)}`;
-  }
+  if (["receita_liquida","lucro_liquido","ebitda","patrimonio_liquido"].includes(key))
+    return fmtMoney(value);
   return String(value);
 }
 
@@ -193,14 +213,68 @@ const PRIORITY_METRICS = [
   "dividendo_por_acao",
 ];
 
-export interface MetricItem { key: string; label: string; value: string; accent: boolean; }
+export interface MetricVariation {
+  /** Ex: "▲ 3,5%" ou "▼ 0,3 p.p." */
+  label: string;
+  /** true melhorou, false piorou, null sem direção definida. */
+  better: boolean | null;
+}
 
-export function topMetrics(m: Record<string, number | string | null>): MetricItem[] {
+export interface MetricItem {
+  key: string;
+  label: string;
+  value: string;
+  variation: MetricVariation | null;
+}
+
+/**
+ * Variação frente ao período anterior.
+ *
+ * Para métricas que já são percentuais, a diferença sai em pontos percentuais:
+ * vacância de 3,2% para 2,9% é uma queda de 0,3 p.p., não de 9,4%. Misturar as
+ * duas leituras é a confusão clássica desse tipo de indicador.
+ */
+function variation(
+  key: string,
+  current: number | string | null,
+  previous: number | string | null | undefined,
+): MetricVariation | null {
+  if (typeof current !== "number" || typeof previous !== "number") return null;
+
+  const delta = current - previous;
+  if (delta === 0) return { label: "estável", better: null };
+
+  let texto: string;
+  if (isPercent(key)) {
+    texto = `${dec1(Math.abs(delta))} p.p.`;
+  } else {
+    if (previous === 0) return null;
+    texto = `${dec1((Math.abs(delta) / Math.abs(previous)) * 100)}%`;
+  }
+
+  const better = AMBIGUOUS.has(key)
+    ? null
+    : LOWER_IS_BETTER.has(key) ? delta < 0 : delta > 0;
+
+  return { label: `${delta > 0 ? "▲" : "▼"} ${texto}`, better };
+}
+
+export function topMetrics(
+  m: Record<string, number | string | null>,
+  previous?: Record<string, number | string | null> | null,
+): MetricItem[] {
   const result: MetricItem[] = [];
   for (const key of PRIORITY_METRICS) {
     if (m[key] !== null && m[key] !== undefined) {
       const fmt = fmtMetric(key, m[key]!);
-      if (fmt) result.push({ key, label: METRIC_LABELS[key] ?? key, value: fmt, accent: ACCENT_METRICS.has(key) });
+      if (fmt) {
+        result.push({
+          key,
+          label: METRIC_LABELS[key] ?? key,
+          value: fmt,
+          variation: variation(key, m[key]!, previous?.[key]),
+        });
+      }
     }
     if (result.length === 4) break;
   }
@@ -209,3 +283,19 @@ export function topMetrics(m: Record<string, number | string | null>): MetricIte
 
 /** Tamanhos em px para a hierarquia visual das métricas na coluna esquerda. */
 export const METRIC_SIZES = [22, 18, 16, 14];
+
+
+/**
+ * Relatório anterior do mesmo ativo e do mesmo tipo de documento — comparar
+ * trimestre com trimestre, mês com mês. A lista chega ordenada do mais
+ * recente para o mais antigo, então o primeiro que casar já é o anterior.
+ */
+export function findPreviousReport(reports: Report[], current: Report): Report | undefined {
+  const t = new Date(current.published_at).getTime();
+  return reports.find(r =>
+    r.id !== current.id &&
+    r.ticker === current.ticker &&
+    r.document_type === current.document_type &&
+    new Date(r.published_at).getTime() < t
+  );
+}
