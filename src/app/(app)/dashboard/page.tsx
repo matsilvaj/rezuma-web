@@ -5,24 +5,25 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useReports } from "@/lib/use-reports";
 import { getReadIds } from "@/lib/read-state";
-import { S, relativeLabel, shortPeriod, normalizeDocType } from "@/lib/report-format";
+import { S, relativeLabel, periodTag, docTypeLabel } from "@/lib/report-format";
 import { Report } from "@/types";
 
 function ReportRow({
   report,
-  companyName,
   unread,
   last,
 }: {
   report: Report;
-  companyName: string;
   unread: boolean;
   last: boolean;
 }) {
   const [hover, setHover] = useState(false);
 
-  const period = shortPeriod(report.title, report.document_type ?? "");
-  const label  = companyName || normalizeDocType(report.document_type ?? "") || report.title;
+  // O título do documento é o que distingue as linhas: o nome da empresa e o
+  // período se repetem em todos os documentos do mesmo trimestre.
+  const tipo = docTypeLabel(report.document_type ?? "");
+  const tag  = periodTag(report.title);
+  const sub  = tag ? `${tipo} · ${tag}` : tipo;
 
   return (
     <Link
@@ -62,7 +63,7 @@ function ReportRow({
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
         }}>
-          {label}
+          {report.title}
         </span>
         <span style={{
           fontFamily: S.mono,
@@ -70,7 +71,7 @@ function ReportRow({
           color: S.textT,
           letterSpacing: "0.2px",
         }}>
-          {period}
+          {sub}
         </span>
       </span>
 
@@ -99,7 +100,7 @@ function ReportRow({
 }
 
 export default function ReportsListPage() {
-  const { reports, nameMap, loading, failed } = useReports();
+  const { reports, loading, failed } = useReports();
   const [readIds,  setReadIds]  = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
 
@@ -157,7 +158,6 @@ export default function ReportsListPage() {
           <ReportRow
             key={report.id}
             report={report}
-            companyName={nameMap.get(report.ticker) ?? ""}
             unread={hydrated && !readIds.has(report.id)}
             last={i === reports.length - 1}
           />

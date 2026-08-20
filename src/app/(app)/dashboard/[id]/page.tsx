@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import { useReports } from "@/lib/use-reports";
 import { markRead } from "@/lib/read-state";
 import {
-  S, RichText, fmtDate, relativeLabel, normalizeDocType,
-  extractPeriod, shortPeriod, parseSummary, topMetrics, METRIC_SIZES,
+  S, RichText, fmtDate, relativeLabel,
+  extractPeriod, shortPeriod, docTypeLabel, parseSummary, topMetrics, METRIC_SIZES,
   findPreviousReport,
 } from "@/lib/report-format";
 
@@ -104,14 +104,14 @@ export default function ReportDetailPage() {
     );
   }
 
-  const docType   = normalizeDocType(report.document_type ?? "");
+  const docType   = docTypeLabel(report.document_type ?? "");
   const relTime   = relativeLabel(report.published_at);
   const { day, month, year, time } = fmtDate(report.published_at);
   const period    = extractPeriod(report.title);
   const compName  = nameMap.get(report.ticker) ?? "";
-  const titleLine = compName
-    ? period ? `${compName} - ${period}` : compName
-    : period ?? report.title;
+  // O título do documento identifica o relatório; empresa e período se
+  // repetem entre todos os documentos do mesmo trimestre.
+  const titleLine = report.title;
   const parsed    = parseSummary(report.summary);
   const anterior  = findPreviousReport(reports, report);
   const metrics   = report.metrics ? topMetrics(report.metrics, anterior?.metrics) : [];
@@ -150,6 +150,11 @@ export default function ReportDetailPage() {
             <div style={{ fontFamily: S.mono, fontSize: "46px", fontWeight: 700, color: S.textP, letterSpacing: "-2px", lineHeight: 1, marginBottom: "10px" }}>
               {report.ticker}
             </div>
+            {compName && (
+              <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.2px", lineHeight: 1.5 }}>
+                {compName}
+              </div>
+            )}
             <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.2px", lineHeight: 1.5, marginBottom: metrics.length > 0 ? "24px" : "0" }}>
               {period ? period.replace("resultado do ", "") : docType}
             </div>
