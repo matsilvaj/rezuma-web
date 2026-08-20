@@ -65,15 +65,34 @@ export function extractPeriod(title: string): string | null {
   return null;
 }
 
-/** Rótulo curto do período para breadcrumb e lista: "3t25". */
-export function shortPeriod(title: string, docType: string): string {
+/** "3t25" quando o título carrega o período; null quando não carrega. */
+export function periodTag(title: string): string | null {
   const p = extractPeriod(title);
-  if (!p) return normalizeDocType(docType);
+  if (!p) return null;
   return p
     .replace("resultado do ", "")
     .replace(" de ", " ")
     .replace("º trimestre", "t")
     .replace("º semestre", "s");
+}
+
+/** Igual ao periodTag, mas cai no tipo de documento quando não há período. */
+export function shortPeriod(title: string, docType: string): string {
+  return periodTag(title) ?? normalizeDocType(docType);
+}
+
+const DOC_TYPE_LABELS: Record<string, string> = {
+  relatorio_gerencial:     "relatório gerencial",
+  informe_mensal:          "informe mensal",
+  fato_relevante:          "fato relevante",
+  apresentacao_resultados: "apresentação de resultados",
+  itr:                     "resultado trimestral",
+  dfp:                     "resultado anual",
+};
+
+/** Nome legível do tipo de documento, com acento. */
+export function docTypeLabel(docType: string): string {
+  return DOC_TYPE_LABELS[docType] ?? normalizeDocType(docType);
 }
 
 // ── Text sanitizer ─────────────────────────────────────────────────────────
