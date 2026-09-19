@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { AppTopNav } from "./_components/top-nav";
+import { SupportWidget } from "./_components/support-widget";
 
 async function getUser() {
   const cookieStore = await cookies();
@@ -29,6 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main style={{ flex: 1, padding: "48px 36px", maxWidth: "900px", width: "100%", margin: "0 auto" }}>
         {children}
       </main>
+      <SupportWidget />
     </div>
   );
 }
