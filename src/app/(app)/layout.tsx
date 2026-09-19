@@ -25,7 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#07080a", fontFamily: "var(--font-sans)" }}>
+    <div style={{ minHeight: "var(--rz-vh)", display: "flex", flexDirection: "column", background: "#07080a", fontFamily: "var(--font-sans)" }}>
       <AppTopNav />
       <main style={{ flex: 1, padding: "48px 36px", maxWidth: "900px", width: "100%", margin: "0 auto" }}>
         {children}

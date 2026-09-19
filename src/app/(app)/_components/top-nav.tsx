@@ -4,10 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV = [
-  { href: "/assets",    label: "ativos",      disabled: false },
-  { href: "/dashboard", label: "relatórios",  disabled: false },
-  { href: "/dividendos",label: "dividendos",  disabled: true  },
-  { href: "/settings",  label: "conta",       disabled: false },
+  { href: "/assets",    label: "ativos"     },
+  { href: "/dashboard", label: "relatórios" },
+  { href: "/settings",  label: "conta"      },
 ];
 
 export function AppTopNav() {
@@ -34,30 +33,13 @@ export function AppTopNav() {
         aria-label="Rezuma"
         style={{ display: "flex", alignItems: "center", gap: "9px", textDecoration: "none", marginRight: "32px" }}
       >
-        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "20px", width: "auto" }} />
+        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "23px", width: "auto" }} />
       </Link>
 
       {/* Nav, centered */}
       <nav style={{ display: "flex", alignItems: "center", gap: "2px", flex: 1, justifyContent: "center" }}>
-        {NAV.map(({ href, label, disabled }) => {
-          const active = !disabled && (pathname === href || pathname.startsWith(href + "/"));
-          if (disabled) {
-            return (
-              <span
-                key={href}
-                style={{
-                  padding: "6px 12px",
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "13px",
-                  color: "rgba(237,237,234,0.18)",
-                  cursor: "default",
-                  userSelect: "none",
-                }}
-              >
-                {label}
-              </span>
-            );
-          }
+        {NAV.map(({ href, label }) => {
+          const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}

@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
-import { usersApi, billingApi } from "@/lib/api";
+import { usersApi } from "@/lib/api";
+import { pixConfigurado } from "@/lib/pix";
+import { PixDonation } from "../_components/pix-donation";
 import { UserProfile } from "@/types";
 import { validateName, validateEmail, validatePassword, validatePasswordConfirm } from "@/lib/validation";
 
@@ -23,21 +25,14 @@ const S = {
 
 const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "RezumaAppBot";
 
-type Section = "perfil" | "notificacoes" | "plano" | "seguranca";
+type Section = "perfil" | "notificacoes" | "apoiar" | "seguranca";
 
 const SECTIONS: { id: Section; label: string }[] = [
   { id: "perfil",        label: "perfil"        },
   { id: "notificacoes",  label: "notificações"   },
-  { id: "plano",         label: "plano"          },
+  { id: "apoiar",        label: "apoiar"         },
   { id: "seguranca",     label: "segurança"      },
 ];
-
-const STATUS_LABEL: Record<string, string> = {
-  trialing: "trial ativo",
-  active:   "plano ativo",
-  past_due: "pagamento pendente",
-  canceled: "cancelado",
-};
 
 // ── Shared primitives ──────────────────────────────────────────────────────
 
@@ -115,6 +110,49 @@ function SubmitButton({ loading, children }: { loading: boolean; children: React
   );
 }
 
+function GhostButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        fontFamily: S.mono,
+        fontSize: "10px",
+        color: hover ? S.textS : S.textT,
+        background: hover ? "rgba(237,237,234,0.04)" : "transparent",
+        border: `1px solid ${hover ? S.borderS : S.border}`,
+        borderRadius: "5px",
+        padding: "5px 12px",
+        cursor: "pointer",
+        letterSpacing: "0.3px",
+        flexShrink: 0,
+        transition: "color 0.15s, background 0.15s, border-color 0.15s",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
+ * Valor atual em repouso, com o botão que abre a edição ao lado.
+ * O formulário só aparece quando pedido: quem entra em configurações
+ * costuma vir conferir o dado, não trocá-lo.
+ */
+function ReadOnlyRow({ value, onEdit }: { value: string; onEdit: () => void }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+      <p style={{ fontFamily: S.mono, fontSize: "13px", color: S.textP, padding: "9px 0", margin: 0, wordBreak: "break-all" }}>
+        {value}
+      </p>
+      <GhostButton onClick={onEdit}>alterar</GhostButton>
+    </div>
+  );
+}
+
 function Divider() {
   return <div style={{ height: "1px", background: S.border, margin: "28px 0" }} />;
 }
@@ -122,9 +160,18 @@ function Divider() {
 // ── Section: Perfil ────────────────────────────────────────────────────────
 
 function PerfilSection({ profile }: { profile: UserProfile }) {
-  const [fullName, setFullName] = useState(profile.profile.full_name ?? "");
-  const [saving,   setSaving]   = useState(false);
-  const [nameErr,  setNameErr]  = useState<string | null>(null);
+  const inicial = profile.profile.full_name ?? "";
+  const [savedName, setSavedName] = useState(inicial);
+  const [fullName,  setFullName]  = useState(inicial);
+  const [editing,   setEditing]   = useState(false);
+  const [saving,    setSaving]    = useState(false);
+  const [nameErr,   setNameErr]   = useState<string | null>(null);
+
+  function cancel() {
+    setFullName(savedName);
+    setNameErr(null);
+    setEditing(false);
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -133,7 +180,11 @@ function PerfilSection({ profile }: { profile: UserProfile }) {
     setNameErr(null);
     setSaving(true);
     try {
-      await usersApi.updateProfile({ full_name: fullName.trim() });
+      const limpo = fullName.trim();
+      await usersApi.updateProfile({ full_name: limpo });
+      setSavedName(limpo);
+      setFullName(limpo);
+      setEditing(false);
       toast.success("Nome atualizado.");
     } catch {
       toast.error("Erro ao salvar nome.");
@@ -148,30 +199,39 @@ function PerfilSection({ profile }: { profile: UserProfile }) {
         Informações básicas da sua conta.
       </p>
 
-      <form onSubmit={handleSave} noValidate style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         <div>
           <SectionLabel>e-mail</SectionLabel>
-          <p style={{ fontFamily: S.mono, fontSize: "13px", color: S.textT, padding: "10px 0" }}>
+          <p style={{ fontFamily: S.mono, fontSize: "13px", color: S.textP, padding: "9px 0", margin: 0, wordBreak: "break-all" }}>
             {profile.email}
+          </p>
+          <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.2px" }}>
+            trocar o e-mail exige a senha, fica em segurança
           </p>
         </div>
 
         <div>
           <SectionLabel>nome</SectionLabel>
-          <FieldInput
-            id="full-name"
-            placeholder="Seu nome completo"
-            value={fullName}
-            onChange={v => { setFullName(v); setNameErr(null); }}
-            error={nameErr}
-            maxLength={120}
-          />
+          {editing ? (
+            <form onSubmit={handleSave} noValidate style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <FieldInput
+                id="full-name"
+                placeholder="Seu nome completo"
+                value={fullName}
+                onChange={v => { setFullName(v); setNameErr(null); }}
+                error={nameErr}
+                maxLength={120}
+              />
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <SubmitButton loading={saving}>{saving ? "salvando…" : "salvar"}</SubmitButton>
+                <GhostButton onClick={cancel}>cancelar</GhostButton>
+              </div>
+            </form>
+          ) : (
+            <ReadOnlyRow value={savedName || "sem nome definido"} onEdit={() => setEditing(true)} />
+          )}
         </div>
-
-        <div>
-          <SubmitButton loading={saving}>{saving ? "salvando…" : "salvar"}</SubmitButton>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }
@@ -374,101 +434,33 @@ function NotificacoesSection({ profile }: { profile: UserProfile }) {
   );
 }
 
-// ── Section: Plano ─────────────────────────────────────────────────────────
+// ── Section: Apoiar ────────────────────────────────────────────────────────
 
-function PlanoSection({ profile }: { profile: UserProfile }) {
-  const [checkingOut,  setCheckingOut]  = useState(false);
-  const [openingPortal,setOpeningPortal]= useState(false);
-
-  const sub    = profile.subscription;
-  const status = sub?.status;
-
-  async function handleCheckout() {
-    setCheckingOut(true);
-    try {
-      const { url } = await billingApi.checkout("monthly");
-      window.location.href = url;
-    } catch {
-      toast.error("Erro ao iniciar checkout.");
-    } finally {
-      setCheckingOut(false);
-    }
-  }
-
-  async function handlePortal() {
-    setOpeningPortal(true);
-    try {
-      const { url } = await billingApi.portal();
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch {
-      toast.error("Erro ao abrir portal de assinatura.");
-    } finally {
-      setOpeningPortal(false);
-    }
-  }
+function ApoiarSection() {
+  const pix = pixConfigurado();
 
   return (
     <div>
-      <p style={{ fontFamily: S.sans, fontSize: "13px", color: S.textS, marginBottom: "28px", lineHeight: 1.6 }}>
-        Gerencie sua assinatura e método de pagamento.
+      <p style={{ fontFamily: S.sans, fontSize: "13px", color: S.textS, marginBottom: "24px", lineHeight: 1.7, maxWidth: "440px" }}>
+        O Rezuma é gratuito, sem anúncios e sem plano pago. É um projeto
+        independente, e o custo de servidor e de leitura dos documentos sai do
+        bolso de quem mantém. Se ele te poupa tempo, um Pix de qualquer valor
+        ajuda a manter tudo no ar.
       </p>
 
-      <div style={{ background: "#0d0f11", border: `1px solid ${S.borderS}`, borderRadius: "10px", padding: "20px 24px", marginBottom: "20px" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
-          <div>
-            <div style={{ fontFamily: S.mono, fontSize: "10px", letterSpacing: "1.4px", textTransform: "uppercase" as const, color: S.textT, fontWeight: 600, marginBottom: "8px" }}>
-              status
-            </div>
-            {sub ? (
-              <>
-                <div style={{ fontFamily: S.sans, fontSize: "14px", fontWeight: 500, color: status === "active" ? S.accent : status === "trialing" ? S.accent : S.textS }}>
-                  {STATUS_LABEL[status!] ?? status}
-                </div>
-                {status === "trialing" && sub.trial_ends_at && (
-                  <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, marginTop: "5px" }}>
-                    trial encerra em {new Date(sub.trial_ends_at).toLocaleDateString("pt-BR")}
-                  </div>
-                )}
-                {status === "active" && sub.current_period_end && (
-                  <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, marginTop: "5px" }}>
-                    renova em {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div style={{ fontFamily: S.sans, fontSize: "14px", color: S.textT }}>
-                sem assinatura ativa
-              </div>
-            )}
-          </div>
-
-          {status === "active" ? (
-            <button
-              onClick={handlePortal}
-              disabled={openingPortal}
-              style={{ fontFamily: S.mono, fontSize: "10px", color: S.textS, background: "transparent", border: `1px solid ${S.borderS}`, borderRadius: "6px", padding: "7px 14px", cursor: "pointer", letterSpacing: "0.3px", flexShrink: 0 }}
-            >
-              {openingPortal ? "abrindo…" : "gerenciar"}
-            </button>
-          ) : (
-            <button
-              onClick={handleCheckout}
-              disabled={checkingOut}
-              style={{ fontFamily: S.sans, fontSize: "13px", fontWeight: 500, color: "#07080a", background: "#ededea", border: "none", borderRadius: "7px", padding: "8px 18px", cursor: "pointer", flexShrink: 0 }}
-            >
-              {checkingOut ? "redirecionando…" : "assinar agora"}
-            </button>
-          )}
+      {pix ? (
+        <div style={{ background: "#0d0f11", border: `1px solid ${S.borderS}`, borderRadius: "10px", padding: "22px 22px 20px", maxWidth: "280px" }}>
+          <PixDonation chave={pix.chave} codigo={pix.codigo} qr={148} />
         </div>
-      </div>
-
-      {!sub && (
-        <div style={{ background: S.accentD, border: `1px solid ${S.accentB}`, borderRadius: "8px", padding: "14px 16px" }}>
-          <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.accent, lineHeight: 1.7 }}>
-            R$4,99/mês · R$49,90/ano, cancele quando quiser
-          </p>
-        </div>
+      ) : (
+        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT }}>
+          doações ainda não configuradas
+        </p>
       )}
+
+      <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, lineHeight: 1.8, marginTop: "20px", maxWidth: "440px" }}>
+        doar não libera nada a mais: todo mundo usa o mesmo Rezuma, com ou sem Pix
+      </p>
     </div>
   );
 }
@@ -483,6 +475,13 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
   const [emailErrs,      setEmailErrs]      = useState<{ password?: string; email?: string; confirm?: string }>({});
   const [savingEmail,    setSavingEmail]    = useState(false);
   const [emailSent,      setEmailSent]      = useState(false);
+  const [editingEmail,   setEditingEmail]   = useState(false);
+
+  function cancelEmailEdit() {
+    setEmailPassword(""); setNewEmail(""); setConfirmEmail("");
+    setEmailErrs({});
+    setEditingEmail(false);
+  }
 
   // Password change
   const [currentPass,    setCurrentPass]    = useState("");
@@ -553,12 +552,9 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
 
       {/* E-mail */}
       <div>
-        <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.6px", textTransform: "uppercase" as const, color: S.textT, fontWeight: 600, marginBottom: "16px" }}>
-          alterar e-mail
+        <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.6px", textTransform: "uppercase" as const, color: S.textT, fontWeight: 600, marginBottom: "10px" }}>
+          e-mail de acesso
         </div>
-        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, marginBottom: "16px" }}>
-          atual: {profile.email}
-        </p>
 
         {emailSent ? (
           <div style={{ background: "#0d0f11", border: `1px solid ${S.borderS}`, borderRadius: "8px", padding: "16px" }}>
@@ -570,12 +566,14 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
             </p>
             <button
               type="button"
-              onClick={() => setEmailSent(false)}
+              onClick={() => { setEmailSent(false); setEditingEmail(true); }}
               style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, background: "transparent", border: "none", cursor: "pointer", marginTop: "12px", textDecoration: "underline" }}
             >
               alterar novamente
             </button>
           </div>
+        ) : !editingEmail ? (
+          <ReadOnlyRow value={profile.email ?? "sem e-mail"} onEdit={() => setEditingEmail(true)} />
         ) : (
           <form onSubmit={handleEmailChange} noValidate style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             <div>
@@ -590,7 +588,10 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
               <SectionLabel>confirmar novo e-mail</SectionLabel>
               <FieldInput id="ce" type="email" placeholder="Repita o novo e-mail" value={confirmEmail} onChange={v => { setConfirmEmail(v); setEmailErrs({}); }} error={emailErrs.confirm} autoComplete="email" />
             </div>
-            <div><SubmitButton loading={savingEmail}>{savingEmail ? "enviando…" : "alterar e-mail"}</SubmitButton></div>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <SubmitButton loading={savingEmail}>{savingEmail ? "enviando…" : "alterar e-mail"}</SubmitButton>
+              <GhostButton onClick={cancelEmailEdit}>cancelar</GhostButton>
+            </div>
           </form>
         )}
       </div>
@@ -686,7 +687,7 @@ export default function SettingsPage() {
 
         {section === "perfil"       && <PerfilSection       profile={profile} />}
         {section === "notificacoes" && <NotificacoesSection profile={profile} />}
-        {section === "plano"        && <PlanoSection        profile={profile} />}
+        {section === "apoiar"       && <ApoiarSection />}
         {section === "seguranca"    && <SegurancaSection    profile={profile} />}
       </div>
     </div>

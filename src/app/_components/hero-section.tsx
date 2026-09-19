@@ -5,7 +5,7 @@ import Link from "next/link";
 
 /*
   6 wave curves in depth layers.
-  Each has: yC (vertical center 0, 1), amp (fraction of H), fx (horiz freq),
+  Each has: yC (vertical center, de 0 a 1), amp (fraction of H), fx (horiz freq),
   ft (time speed), ph (phase), op (opacity), lw (line width), glow (bool).
 */
 const CURVES = [
@@ -87,7 +87,7 @@ function drawCurve(
   ctx.stroke();
 }
 
-export function HeroSection() {
+export function HeroSection({ viewerName }: { viewerName?: string | null }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
@@ -106,20 +106,32 @@ export function HeroSection() {
     let scrollY = 0;
 
     function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = window.innerWidth;
-      H = window.innerHeight;
+      // A interface roda sob CSS zoom (--rz-zoom), então a janela não serve de
+      // régua: offset* dá o tamanho em px locais (o sistema de coordenadas do
+      // desenho) e o rect dá o tamanho em px de tela. A razão entre os dois é o
+      // zoom em vigor, que entra no dpr para a curva não sair serrilhada.
+      const rect = canvas!.getBoundingClientRect();
+      W = canvas!.offsetWidth;
+      H = canvas!.offsetHeight;
+      const zoom = W > 0 ? rect.width / W : 1;
+
+      dpr = Math.min((window.devicePixelRatio || 1) * zoom, 3);
       canvas!.width  = W * dpr;
       canvas!.height = H * dpr;
-      canvas!.style.width  = W + "px";
-      canvas!.style.height = H + "px";
       ctx!.setTransform(1, 0, 0, 1, 0, 0);
       ctx!.scale(dpr, dpr);
     }
 
     const onMouse = (e: MouseEvent) => {
-      mx = (e.clientX / W) * 2 - 1;
-      my = (e.clientY / H) * 2 - 1;
+      // clientX e o rect vivem no mesmo espaço (px de tela), então a razão
+      // entre eles dispensa saber o zoom.
+      const rect = canvas!.getBoundingClientRect();
+      // Canvas com tamanho zero (recarregando, aba escondida) daria divisão
+      // por zero: o infinito vira NaN no desenho e o gradiente lança erro,
+      // o que mata a animação de vez.
+      if (rect.width <= 0 || rect.height <= 0) return;
+      mx = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+      my = ((e.clientY - rect.top)  / rect.height) * 2 - 1;
     };
 
     const onScroll = () => {
@@ -158,7 +170,7 @@ export function HeroSection() {
     <section
       style={{
         position: "relative",
-        minHeight: "100vh",
+        minHeight: "var(--rz-vh)",
         overflow: "hidden",
         background: "#07080a",
         display: "flex",
@@ -187,12 +199,12 @@ export function HeroSection() {
           padding: "22px 36px",
         }}
       >
-        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "22px", width: "auto" }} />
+        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "25px", width: "auto" }} />
         <Link
-          href="/login"
+          href={viewerName ? "/dashboard" : "/login"}
           style={{ fontFamily: "var(--font-sans)", fontSize: "13px", fontWeight: 500, color: "rgba(237,237,234,0.40)", textDecoration: "none" }}
         >
-          Entrar
+          {viewerName ? `Olá, ${viewerName}` : "Entrar"}
         </Link>
       </nav>
 
@@ -213,39 +225,48 @@ export function HeroSection() {
           relatórios de fiis e ações
         </p>
 
+        {/* Os tamanhos aqui são menores que o desenho original de propósito: a
+            página inteira roda sob zoom 1.35, e o herói é a única seção que
+            precisa caber na altura da janela. */}
         <h1
           style={{
             fontFamily: "var(--font-sans)",
-            fontSize: "clamp(42px, 6.5vw, 76px)",
+            fontSize: "clamp(34px, 5vw, 58px)",
             fontWeight: 700,
             color: "#ededea",
-            letterSpacing: "-3px",
+            letterSpacing: "-2.4px",
             lineHeight: 1.04,
-            marginBottom: "24px",
-            maxWidth: "740px",
+            marginBottom: "22px",
+            maxWidth: "580px",
           }}
         >
           Pare de ignorar<br />os relatórios.
         </h1>
 
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "16px", color: "rgba(237,237,234,0.38)", lineHeight: 1.75, maxWidth: "450px", marginBottom: "48px" }}>
-          Cada relatório publicado pelos seus FIIs e ações é lido e resumido automaticamente. O que importa chega no seu e-mail ou Telegram.
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.38)", lineHeight: 1.75, maxWidth: "390px", marginBottom: "38px" }}>
+          Assim que a CVM ou o FNET publica um documento dos seus FIIs e ações,
+          ele é lido e devolvido em quatro parágrafos, no seu e-mail e no
+          Telegram, no mesmo dia.
         </p>
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
           <Link
-            href="/register"
-            style={{ fontFamily: "var(--font-sans)", background: "#ededea", color: "#07080a", padding: "13px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, letterSpacing: "-0.2px", textDecoration: "none" }}
+            href={viewerName ? "/dashboard" : "/register"}
+            style={{ fontFamily: "var(--font-sans)", background: "#ededea", color: "#07080a", padding: "12px 26px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, letterSpacing: "-0.2px", textDecoration: "none" }}
           >
-            Começar por R$4,90/mês
+            {viewerName ? "Ir para os relatórios" : "Criar conta grátis"}
           </Link>
           <a
             href="#exemplo"
-            style={{ fontFamily: "var(--font-sans)", background: "transparent", color: "rgba(237,237,234,0.45)", padding: "13px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: 500, border: "1px solid rgba(237,237,234,0.09)", textDecoration: "none" }}
+            style={{ fontFamily: "var(--font-sans)", background: "transparent", color: "rgba(237,237,234,0.45)", padding: "12px 26px", borderRadius: "8px", fontSize: "13px", fontWeight: 500, border: "1px solid rgba(237,237,234,0.09)", textDecoration: "none" }}
           >
-            Ver exemplo
+            Ver um resumo real
           </a>
         </div>
+
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.4px", color: "rgba(237,237,234,0.18)", marginTop: "26px" }}>
+          documentos oficiais da CVM, do FNET e da B3
+        </p>
       </div>
 
       <div
