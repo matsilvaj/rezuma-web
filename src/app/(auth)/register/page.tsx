@@ -108,7 +108,7 @@ export default function RegisterPage() {
         Criar conta
       </h1>
       <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.40)", lineHeight: 1.6 }}>
-        7 dias grátis, sem cartão de crédito.
+        Gratuito. Sem cartão, sem plano, sem período de teste.
       </p>
 
       <form onSubmit={handleRegister} noValidate style={{ marginTop: "32px", display: "flex", flexDirection: "column", gap: "18px" }}>

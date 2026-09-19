@@ -95,8 +95,13 @@ export default function AssetsPage() {
         toast.success(`${ticker} adicionado.`);
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "";
-      toast.error(msg.toLowerCase().includes("já") ? "Ativo já está na sua lista." : "Erro ao adicionar ativo.");
+      const msg = (err instanceof Error ? err.message : "").toLowerCase();
+      toast.error(
+        msg.includes("limite") ? "Você chegou ao limite de 30 ativos. Remova um para adicionar outro." :
+        msg.includes("muitas") ? "Muitas alterações seguidas. Tente de novo em alguns minutos." :
+        msg.includes("já")     ? "Ativo já está na sua lista." :
+                                 "Erro ao adicionar ativo.",
+      );
     } finally {
       setAdding(null);
     }
@@ -148,7 +153,7 @@ export default function AssetsPage() {
         <div style={{ position: "relative" }}>
           <input
             type="text"
-            placeholder="Buscar ativo, PETR4, HGLG11…"
+            placeholder="Buscar ativo: PETR4, HGLG11…"
             value={query}
             maxLength={8}
             autoComplete="off"

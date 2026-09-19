@@ -49,6 +49,15 @@
 }
 
 :root {
+  /* Escala global da interface.
+     Os tamanhos no código continuam em px "de projeto"; o zoom converte para
+     px de tela. Mudar este número reescala o app inteiro de uma vez. */
+  --rz-zoom: 1.35;
+
+  /* Altura da janela já descontada da escala. Usar no lugar de 100vh: sob
+     zoom, 100vh renderiza 35% mais alto que a janela e nasce barra de rolagem. */
+  --rz-vh: calc(100vh / 1.35);
+
   /* Paleta Rezuma */
   --rz-bg:             #07080a;
   --rz-surface:        #0d0f11;
@@ -136,8 +145,19 @@
   }
   body {
     @apply bg-background text-foreground;
+    zoom: var(--rz-zoom);
   }
   html {
     @apply font-sans;
   }
+}
+
+/* Trilho do carrossel: rola na horizontal sem exibir a barra, que aqui só
+   polui, a navegação é pelas setas e pelo próprio arrasto. */
+.rz-carousel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.rz-carousel::-webkit-scrollbar {
+  display: none;
 }

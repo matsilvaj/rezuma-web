@@ -35,10 +35,4 @@ export interface UserProfile {
     telegram_chat_id: string | null;
     created_at: string;
   };
-  subscription: {
-    status: "trialing" | "active" | "past_due" | "canceled";
-    plan: "monthly" | "annual" | null;
-    trial_ends_at: string;
-    current_period_end: string | null;
-  } | null;
 }
