@@ -1,4 +1,4 @@
-// Regex RFC 5322 simplificado — suficiente para UI; a validação definitiva é no servidor
+// Regex RFC 5322 simplificado, suficiente para UI; a validação definitiva é no servidor
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function validateName(value: string): string | null {
@@ -50,6 +50,6 @@ export function translateSupabaseError(message: string): string {
   if (m.includes("rate limit") || m.includes("too many requests")) {
     return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
   }
-  // Fallback genérico — não expõe detalhes internos
+  // Fallback genérico, não expõe detalhes internos
   return "Ocorreu um erro. Tente novamente.";
 }

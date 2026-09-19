@@ -37,7 +37,7 @@ export function AppTopNav() {
         <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "20px", width: "auto" }} />
       </Link>
 
-      {/* Nav — centered */}
+      {/* Nav, centered */}
       <nav style={{ display: "flex", alignItems: "center", gap: "2px", flex: 1, justifyContent: "center" }}>
         {NAV.map(({ href, label, disabled }) => {
           const active = !disabled && (pathname === href || pathname.startsWith(href + "/"));

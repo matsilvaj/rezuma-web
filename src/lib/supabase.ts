@@ -2,7 +2,7 @@ import { createBrowserClient } from "@supabase/ssr";
 
 /**
  * Cliente Supabase para uso no browser (componentes client-side).
- * Usa as variáveis públicas — nunca expor service_role aqui.
+ * Usa as variáveis públicas, nunca expor service_role aqui.
  */
 export function createClient() {
   return createBrowserClient(

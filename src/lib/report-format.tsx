@@ -207,7 +207,7 @@ function isPercent(key: string): boolean {
     || key === "indice_basileia";
 }
 
-/** 1 → "1", 1.5 → "1,5" — sem casa decimal inútil. */
+/** 1 → "1", 1.5 → "1,5", sem casa decimal inútil. */
 function dec1(n: number): string {
   return n.toFixed(1).replace(/\.0$/, "").replace(".", ",");
 }
