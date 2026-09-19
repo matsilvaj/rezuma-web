@@ -41,7 +41,7 @@ export const assetsApi = {
   search: (q: string) =>
     apiFetch(`/api/v1/assets/search?q=${encodeURIComponent(q)}`).then((r) => {
       const items: { ticker: string; name: string | null; type: string | null }[] = r?.results ?? [];
-      // Deduplica por ticker — a busca usa OR entre ticker e name, podendo retornar o mesmo ticker duas vezes
+      // Deduplica por ticker, a busca usa OR entre ticker e name, podendo retornar o mesmo ticker duas vezes
       const seen = new Set<string>();
       return items.filter((item) => {
         if (seen.has(item.ticker)) return false;

@@ -165,7 +165,7 @@ export default function HomePage() {
                 relatórios / knri11 / 3t25
               </div>
               <div style={{ fontSize: "13px", fontWeight: 500, color: S.textS }}>
-                Kinea Renda Imobiliária — resultado do 3º trimestre de 2025
+                Kinea Renda Imobiliária, resultado do 3º trimestre de 2025
               </div>
             </div>
             <div

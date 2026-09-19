@@ -1,4 +1,4 @@
-REZUMA — DESIGN SYSTEM
+REZUMA, DESIGN SYSTEM
 ======================
 
 
@@ -37,7 +37,7 @@ Accent
   #5eb88a
   Uso: dados financeiros positivos (variação positiva, dividendo confirmado),
        badges de destaque, link ativo na navegação, indicadores de novo relatório.
-       Usar com parcimônia — máximo um elemento accent por bloco visual.
+       Usar com parcimônia, máximo um elemento accent por bloco visual.
 
 Accent fundo (dim)
   rgba(94, 184, 138, 0.12)

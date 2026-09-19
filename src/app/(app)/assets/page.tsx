@@ -148,7 +148,7 @@ export default function AssetsPage() {
         <div style={{ position: "relative" }}>
           <input
             type="text"
-            placeholder="Buscar ativo — PETR4, HGLG11…"
+            placeholder="Buscar ativo, PETR4, HGLG11…"
             value={query}
             maxLength={8}
             autoComplete="off"

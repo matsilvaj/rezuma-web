@@ -5,7 +5,7 @@ import Link from "next/link";
 
 /*
   6 wave curves in depth layers.
-  Each has: yC (vertical center 0–1), amp (fraction of H), fx (horiz freq),
+  Each has: yC (vertical center 0, 1), amp (fraction of H), fx (horiz freq),
   ft (time speed), ph (phase), op (opacity), lw (line width), glow (bool).
 */
 const CURVES = [
@@ -16,7 +16,7 @@ const CURVES = [
   // mid
   { yC: 0.47, amp: 0.105, fx: 0.0030, ft: 0.27, ph: 1.4,  op: 0.060, lw: 1.0, glow: false },
   { yC: 0.55, amp: 0.085, fx: 0.0042, ft: 0.20, ph: 5.3,  op: 0.050, lw: 0.9, glow: false },
-  // foreground main — glow + shimmer
+  // foreground main, glow + shimmer
   { yC: 0.50, amp: 0.130, fx: 0.0028, ft: 0.31, ph: 3.2,  op: 0.26,  lw: 1.5, glow: true  },
 ] as const;
 

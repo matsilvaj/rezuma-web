@@ -354,7 +354,7 @@ function NotificacoesSection({ profile }: { profile: UserProfile }) {
           )}
         </div>
 
-        {/* WhatsApp — em breve */}
+        {/* WhatsApp, em breve */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", opacity: 0.35 }}>
           <div>
             <div style={{ fontFamily: S.sans, fontSize: "13px", fontWeight: 500, color: S.textP }}>
@@ -465,7 +465,7 @@ function PlanoSection({ profile }: { profile: UserProfile }) {
       {!sub && (
         <div style={{ background: S.accentD, border: `1px solid ${S.accentB}`, borderRadius: "8px", padding: "14px 16px" }}>
           <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.accent, lineHeight: 1.7 }}>
-            R$4,99/mês · R$49,90/ano — cancele quando quiser
+            R$4,99/mês · R$49,90/ano, cancele quando quiser
           </p>
         </div>
       )}
