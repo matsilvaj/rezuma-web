@@ -62,6 +62,12 @@ export default function ResetPasswordPage() {
       const supabase = createClient();
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
+
+      // Quem redefine a senha por e-mail costuma estar recuperando a conta
+      // de alguém que entrou nela. Encerrar as outras sessões é o que torna
+      // a recuperação efetiva.
+      await supabase.auth.signOut({ scope: "others" });
+
       router.push("/dashboard");
     } catch {
       setErrors({ form: "Erro ao redefinir senha. O link pode ter expirado. Solicite um novo." });

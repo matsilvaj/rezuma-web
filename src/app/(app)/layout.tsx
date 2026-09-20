@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { AppTopNav } from "./_components/top-nav";
 import { SupportWidget } from "./_components/support-widget";
+import { SiteFooter } from "../_components/site-footer";
 
 async function getUser() {
   const cookieStore = await cookies();
@@ -30,6 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="rz-pad rz-app-main" style={{ flex: 1, maxWidth: "900px", width: "100%", margin: "0 auto" }}>
         {children}
       </main>
+      <SiteFooter semConta />
       <SupportWidget />
     </div>
   );

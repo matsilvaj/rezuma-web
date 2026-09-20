@@ -18,7 +18,7 @@ export default function PrivacidadePage() {
     >
       <h2>Quem trata os seus dados</h2>
       <p>
-        O Rezuma é um projeto independente mantido por Matheus Silva. Para
+        O Rezuma é um produto independente mantido por Matheus Silva. Para
         qualquer assunto de privacidade, inclusive para exercer os direitos
         listados aqui, escreva para <strong>{CONTATO}</strong>.
       </p>
