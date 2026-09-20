@@ -23,7 +23,7 @@ export default function FaqPage() {
 
       <h2>Com que frequência chegam?</h2>
       <p>
-        A busca roda três vezes por dia. Quando um documento seu é publicado,
+        A busca roda duas vezes por dia, de manhã e no fim da tarde. Quando um documento seu é publicado,
         ele costuma chegar no mesmo dia. Isso depende das fontes: se a CVM
         publicar com atraso, o resumo sai com atraso também.
       </p>

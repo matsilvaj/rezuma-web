@@ -31,7 +31,7 @@ export default function SobrePage() {
 
       <h2>Como funciona por dentro</h2>
       <p>
-        Três vezes por dia, um processo automático confere as fontes oficiais
+        Duas vezes por dia, um processo automático confere as fontes oficiais
         procurando documentos novos dos ativos que as pessoas cadastraram. Cada
         documento encontrado é baixado, lido por inteiro e transformado em um
         resumo com estrutura fixa: destaque, movimentações, pontos de atenção e
