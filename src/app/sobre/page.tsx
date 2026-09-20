@@ -66,8 +66,11 @@ export default function SobrePage() {
 
       <h2>Quem mantém</h2>
       <p>
-        O Rezuma é um projeto independente, feito e mantido por Matheus Silva,
-        que também é usuário dele. Não tem investidor, não tem publicidade e não
+        O Rezuma é um projeto independente, feito e mantido por{" "}
+        <a href="https://www.linkedin.com/in/matheussilvams/" target="_blank" rel="noopener noreferrer">
+          Matheus Silva
+        </a>
+        , que também é usuário dele. Não tem investidor, não tem publicidade e não
         vende dados. Quem quiser ajudar a pagar servidor e leitura dos
         documentos pode contribuir por Pix, de dentro do painel, sem ganhar
         nada diferente por isso.
