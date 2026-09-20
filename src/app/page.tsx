@@ -76,7 +76,7 @@ const PERGUNTAS = [
   },
   {
     p: "Com que frequência os resumos chegam?",
-    r: "A busca roda três vezes por dia. Quando um documento seu é publicado, ele costuma chegar no mesmo dia.",
+    r: "A busca roda duas vezes por dia, de manhã e no fim da tarde. Quando um documento seu é publicado, ele costuma chegar no mesmo dia.",
   },
   {
     p: "Posso confiar no resumo para decidir?",
