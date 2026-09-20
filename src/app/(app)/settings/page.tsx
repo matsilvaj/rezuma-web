@@ -476,6 +476,9 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
   const [savingEmail,    setSavingEmail]    = useState(false);
   const [emailSent,      setEmailSent]      = useState(false);
   const [editingEmail,   setEditingEmail]   = useState(false);
+  // Guardado à parte: os campos são limpos no envio, então sem isto a tela
+  // de confirmação não teria como mostrar para onde o link foi.
+  const [emailPendente,  setEmailPendente]  = useState("");
 
   function cancelEmailEdit() {
     setEmailPassword(""); setNewEmail(""); setConfirmEmail("");
@@ -541,6 +544,7 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
       if (ae) { setEmailErrs({ password: "Senha incorreta." }); return; }
       const { error } = await supabase.auth.updateUser({ email: newEmail.trim().toLowerCase() });
       if (error) throw error;
+      setEmailPendente(newEmail.trim().toLowerCase());
       setEmailSent(true);
       setEmailPassword(""); setNewEmail(""); setConfirmEmail("");
     } catch {
@@ -601,7 +605,10 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
               Confirmação enviada
             </div>
             <p style={{ fontFamily: S.sans, fontSize: "13px", color: S.textS, lineHeight: 1.6 }}>
-              Enviamos um link para <strong>{newEmail || "seu novo e-mail"}</strong>. O endereço só será atualizado após você clicar no link.
+              Enviamos um link de confirmação para <strong>{profile.email}</strong> e
+              outro para <strong>{emailPendente || "o novo endereço"}</strong>.
+              É preciso confirmar nos dois: a troca só vale quando os dois
+              links forem abertos.
             </p>
             <button
               type="button"
