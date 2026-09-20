@@ -42,17 +42,14 @@ export default function SobrePage() {
       </p>
       <ul>
         <li>
-          <strong>Número errado é pior que número ausente.</strong> Os valores
-          extraídos são conferidos contra o próprio texto do documento, e o que
-          não bate é descartado em vez de exibido. Balanço brasileiro publica em
-          &quot;R$ mil&quot; ou &quot;R$ milhões&quot;, e um erro de escala transforma três bilhões
-          em três trilhões sem avisar ninguém.
+          <strong>Todo número é conferido contra o texto do documento.</strong>{" "}
+          Escala, período e sinal passam por validação automática antes de virar
+          resumo, para que o valor que você lê seja o valor que está publicado.
         </li>
         <li>
-          <strong>O resumo é do documento, não do investidor.</strong> Por isso
-          ele é gerado uma vez e serve a todo mundo que acompanha aquele ativo.
-          É o que torna o projeto sustentável sendo gratuito: o custo cresce com
-          o número de ativos existentes, não com o número de pessoas usando.
+          <strong>O resumo é do documento, não do investidor.</strong> Ele é
+          gerado uma vez e serve a todo mundo que acompanha aquele ativo: o
+          mesmo texto, no mesmo padrão, no mesmo dia da publicação.
         </li>
       </ul>
 
@@ -66,14 +63,12 @@ export default function SobrePage() {
 
       <h2>Quem mantém</h2>
       <p>
-        O Rezuma é um projeto independente, feito e mantido por{" "}
+        O Rezuma é um produto independente, criado e mantido por{" "}
         <a href="https://www.linkedin.com/in/matheussilvams/" target="_blank" rel="noopener noreferrer">
           Matheus Silva
         </a>
-        , que também é usuário dele. Não tem investidor, não tem publicidade e não
-        vende dados. Quem quiser ajudar a pagar servidor e leitura dos
-        documentos pode contribuir por Pix, de dentro do painel, sem ganhar
-        nada diferente por isso.
+        , que também é usuário dele. Não vende dados de quem usa e não responde a
+        nenhum interesse além de entregar o documento resumido a tempo.
       </p>
 
       <h2>Feito com</h2>

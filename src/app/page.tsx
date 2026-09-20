@@ -79,16 +79,16 @@ const PERGUNTAS = [
     r: "A busca roda duas vezes por dia, de manhã e no fim da tarde. Quando um documento seu é publicado, ele costuma chegar no mesmo dia.",
   },
   {
-    p: "Posso confiar no resumo para decidir?",
-    r: "Use o resumo para saber o que aconteceu e onde olhar. Ele é gerado automaticamente e pode conter erro ou omissão, então abra o documento original pelo link que acompanha cada resumo antes de decidir qualquer coisa.",
+    p: "Como devo usar o resumo?",
+    r: "Para saber, em poucos minutos, o que mudou no ativo e onde olhar com atenção. O Rezuma informa, não aconselha: não é recomendação de investimento, e o documento original fica a um clique dentro de cada resumo.",
   },
   {
     p: "Por onde eu recebo?",
     r: "Por e-mail e, se você vincular, pelo Telegram. Dá para desligar cada canal quando quiser. Tudo também fica guardado no painel, então nada depende de achar o e-mail depois.",
   },
   {
-    p: "É gratuito mesmo? Vai virar pago?",
-    r: "É gratuito, sem plano pago e sem anúncio. Não há cobrança futura automática. Quem quiser apoiar pode mandar um Pix pelo painel, o que não libera nada diferente.",
+    p: "Quanto custa?",
+    r: "Nada. O acesso é gratuito, sem anúncio e sem plano pago, e nenhum recurso fica escondido atrás de cobrança. Não existe cobrança automática.",
   },
 ] as const;
 

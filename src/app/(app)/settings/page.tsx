@@ -568,8 +568,14 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
       if (ae) { setPassErrs({ current: "Senha atual incorreta." }); return; }
       const { error } = await supabase.auth.updateUser({ password: newPass });
       if (error) throw error;
+
+      // Derruba as outras sessões. Sem isto, quem já estivesse dentro da
+      // conta continuaria dentro depois da troca, que é justamente o motivo
+      // pelo qual alguém troca a senha às pressas.
+      await supabase.auth.signOut({ scope: "others" });
+
       setCurrentPass(""); setNewPass(""); setConfirmPass("");
-      toast.success("Senha alterada com sucesso.");
+      toast.success("Senha alterada. As outras sessões foram desconectadas.");
     } catch {
       toast.error("Erro ao alterar senha.");
     } finally {

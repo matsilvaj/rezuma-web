@@ -13,7 +13,7 @@ export default function ContatoPage() {
   return (
     <ContentPage
       titulo="Contato"
-      resumo="Erro em um resumo, ativo que não aparece, sugestão ou qualquer dúvida. Quem lê é quem faz o Rezuma."
+      resumo="Erro em um resumo, ativo que não aparece, sugestão ou qualquer dúvida. Toda mensagem é lida e respondida."
     >
       <p>
         Se for sobre um resumo específico, diga o ticker e a data. Com isso dá

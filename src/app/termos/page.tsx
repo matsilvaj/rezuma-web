@@ -73,12 +73,13 @@ export default function TermosPage() {
         insistirem em contornar esses limites podem ser suspensas.
       </p>
 
-      <h2>Gratuidade e doações</h2>
+      <h2>Gratuidade</h2>
       <p>
-        O Rezuma é gratuito. Não há plano pago, cobrança futura automática nem
-        recurso reservado a quem paga. Quem quiser pode contribuir por Pix, de
-        forma voluntária: a doação não dá direito a nada diferente, não é
-        assinatura e não é reembolsável.
+        O acesso ao Rezuma é gratuito. Não há plano pago, cobrança automática
+        nem recurso reservado a quem paga. Se uma versão paga passar a existir,
+        ela será comunicada por e-mail com antecedência e só valerá mediante
+        contratação expressa sua. Contribuições voluntárias por Pix, quando
+        oferecidas, não são assinatura e não são reembolsáveis.
       </p>
 
       <h2>Disponibilidade e mudanças</h2>

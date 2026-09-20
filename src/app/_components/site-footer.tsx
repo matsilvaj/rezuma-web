@@ -16,16 +16,20 @@ const LINKS = [
 ];
 
 /**
- * Rodapé compartilhado pela landing e pelas páginas de conteúdo, para os
- * links institucionais e o aviso legal existirem em um lugar só.
+ * Rodapé compartilhado por todo o site — landing, páginas de conteúdo, telas
+ * de acesso e painel — para os links institucionais e o aviso legal existirem
+ * em um lugar só.
+ *
+ * `semConta` esconde o bloco de entrar/criar conta: dentro do painel ele seria
+ * um atalho para a tela em que a pessoa já está.
  */
-export function SiteFooter({ viewerName }: { viewerName?: string | null }) {
+export function SiteFooter({ viewerName, semConta }: { viewerName?: string | null; semConta?: boolean }) {
   return (
     <footer className="rz-pad" style={{ borderTop: `1px solid ${S.border}`, maxWidth: "900px", margin: "0 auto", paddingTop: "28px", paddingBottom: "40px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
         <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
         <div style={{ display: "flex", gap: "24px" }}>
-          {viewerName ? (
+          {semConta ? null : viewerName ? (
             <Link href="/dashboard" style={{ fontSize: "12px", color: S.textS, textDecoration: "none" }}>
               Olá, {viewerName}
             </Link>

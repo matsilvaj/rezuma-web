@@ -36,20 +36,20 @@ export default function FaqPage() {
         há o que mostrar até a próxima publicação dele.
       </p>
 
-      <h2>Posso confiar no resumo para decidir?</h2>
+      <h2>Como devo usar o resumo?</h2>
       <p>
-        Use o resumo para saber o que aconteceu e onde olhar. Ele é gerado
-        automaticamente e pode conter erro ou omissão. Antes de qualquer decisão,
-        abra o documento original pelo link que acompanha cada resumo. O Rezuma
-        não recomenda compra nem venda, como explicam os{" "}
+        Para saber, em poucos minutos, o que mudou no ativo e onde olhar com
+        atenção. O Rezuma informa, não aconselha: não é recomendação de
+        investimento nem consultoria financeira, e o documento original fica a
+        um clique dentro de cada resumo, sempre que você quiser conferir a
+        fonte. O restante está nos{" "}
         <Link href="/termos">termos de uso</Link>.
       </p>
 
       <h2>Quantos ativos posso acompanhar?</h2>
       <p>
-        Até 30 por conta. O limite existe porque cada ativo novo custa
-        processamento de leitura, e o Rezuma é gratuito. Carteiras reais
-        costumam ficar bem abaixo disso.
+        Até 30 por conta, o que cobre com folga as carteiras reais. O limite
+        mantém a leitura dos documentos rápida para todo mundo.
       </p>
 
       <h2>Por onde recebo?</h2>
@@ -66,11 +66,12 @@ export default function FaqPage() {
         e serve uma vez só.
       </p>
 
-      <h2>É gratuito mesmo? Vai virar pago?</h2>
+      <h2>Quanto custa?</h2>
       <p>
-        É gratuito, sem plano pago e sem anúncio. Não há cobrança futura
-        automática. Quem quiser apoiar pode mandar um Pix pelo painel, o que não
-        libera nada diferente.
+        Nada. O acesso é gratuito, sem anúncio e sem plano pago, e nenhum
+        recurso fica escondido atrás de cobrança. Não existe cobrança
+        automática: qualquer mudança nisso seria avisada por e-mail com
+        antecedência e dependeria de você aceitar.
       </p>
 
       <h2>Como apago minha conta?</h2>
