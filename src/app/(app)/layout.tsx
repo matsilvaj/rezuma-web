@@ -31,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="rz-pad rz-app-main" style={{ flex: 1, maxWidth: "900px", width: "100%", margin: "0 auto" }}>
         {children}
       </main>
-      <SiteFooter semConta />
+      <SiteFooter compacto />
       <SupportWidget />
     </div>
   );

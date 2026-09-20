@@ -16,33 +16,52 @@ const LINKS = [
 ];
 
 /**
- * Rodapé compartilhado por todo o site — landing, páginas de conteúdo, telas
- * de acesso e painel — para os links institucionais e o aviso legal existirem
- * em um lugar só.
+ * Rodapé compartilhado por todo o site: landing, páginas de conteúdo, telas
+ * de acesso e painel. Os links institucionais e o aviso legal existem em um
+ * lugar só.
  *
- * `semConta` esconde o bloco de entrar/criar conta: dentro do painel ele seria
- * um atalho para a tela em que a pessoa já está.
+ * `compacto` é a versão de dentro do produto. Some a linha de cima inteira,
+ * porque ali a logo já está na barra do topo e o atalho de conta apontaria
+ * para a tela em que a pessoa já está. Sobram os links e o aviso, centrados.
  */
-export function SiteFooter({ viewerName, semConta }: { viewerName?: string | null; semConta?: boolean }) {
+export function SiteFooter({
+  viewerName,
+  compacto,
+}: {
+  viewerName?: string | null;
+  compacto?: boolean;
+}) {
   return (
-    <footer className="rz-pad" style={{ borderTop: `1px solid ${S.border}`, maxWidth: "900px", margin: "0 auto", paddingTop: "28px", paddingBottom: "40px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
-        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
-        <div style={{ display: "flex", gap: "24px" }}>
-          {semConta ? null : viewerName ? (
-            <Link href="/dashboard" style={{ fontSize: "12px", color: S.textS, textDecoration: "none" }}>
-              Olá, {viewerName}
-            </Link>
-          ) : (
-            <>
-              <Link href="/login"    style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Entrar</Link>
-              <Link href="/register" style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Criar conta</Link>
-            </>
-          )}
+    <footer
+      className={compacto ? "rz-pad rz-footer-app" : "rz-pad"}
+      style={{
+        borderTop: `1px solid ${S.border}`,
+        maxWidth: "900px",
+        width: "100%",
+        margin: "0 auto",
+        paddingTop: compacto ? "24px" : "28px",
+        paddingBottom: compacto ? undefined : "40px",
+      }}
+    >
+      {!compacto && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
+          <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
+          <div style={{ display: "flex", gap: "24px" }}>
+            {viewerName ? (
+              <Link href="/dashboard" style={{ fontSize: "12px", color: S.textS, textDecoration: "none" }}>
+                Olá, {viewerName}
+              </Link>
+            ) : (
+              <>
+                <Link href="/login"    style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Entrar</Link>
+                <Link href="/register" style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Criar conta</Link>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      <nav style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "18px", marginTop: "26px" }}>
+      <nav className="rz-footer-nav" style={{ marginTop: compacto ? 0 : "26px" }}>
         {LINKS.map(l => (
           <Link key={l.href} href={l.href} style={{ fontFamily: S.mono, fontSize: "11px", color: S.textT, textDecoration: "none" }}>
             {l.label}
@@ -50,8 +69,8 @@ export function SiteFooter({ viewerName, semConta }: { viewerName?: string | nul
         ))}
       </nav>
 
-      <div style={{ textAlign: "center", marginTop: "28px" }}>
-        <p style={{ fontSize: "11px", color: S.textT, lineHeight: 1.8, maxWidth: "560px", margin: "0 auto 14px" }}>
+      <div style={{ textAlign: "center", marginTop: compacto ? "20px" : "28px" }}>
+        <p className="rz-footer-aviso">
           Os resumos são feitos a partir de documentos públicos divulgados pelas
           próprias companhias e fundos. Não são recomendação de investimento,
           análise de valores mobiliários nem consultoria financeira. Toda
