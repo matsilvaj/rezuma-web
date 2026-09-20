@@ -69,6 +69,29 @@ const ANATOMY = [
   },
 ] as const;
 
+const PERGUNTAS = [
+  {
+    p: "De onde vêm os documentos?",
+    r: "Das fontes oficiais: o portal de dados da CVM, o FNET, que concentra os documentos de fundos imobiliários, e o catálogo de ativos da B3. Nada vem de blog, grupo ou casa de análise.",
+  },
+  {
+    p: "Com que frequência os resumos chegam?",
+    r: "A busca roda três vezes por dia. Quando um documento seu é publicado, ele costuma chegar no mesmo dia.",
+  },
+  {
+    p: "Posso confiar no resumo para decidir?",
+    r: "Use o resumo para saber o que aconteceu e onde olhar. Ele é gerado automaticamente e pode conter erro ou omissão, então abra o documento original pelo link que acompanha cada resumo antes de decidir qualquer coisa.",
+  },
+  {
+    p: "Por onde eu recebo?",
+    r: "Por e-mail e, se você vincular, pelo Telegram. Dá para desligar cada canal quando quiser. Tudo também fica guardado no painel, então nada depende de achar o e-mail depois.",
+  },
+  {
+    p: "É gratuito mesmo? Vai virar pago?",
+    r: "É gratuito, sem plano pago e sem anúncio. Não há cobrança futura automática. Quem quiser apoiar pode mandar um Pix pelo painel, o que não libera nada diferente.",
+  },
+] as const;
+
 function SectionTag({ children, mb = "40px" }: { children: React.ReactNode; mb?: string }) {
   return (
     <p style={{ fontFamily: S.mono, fontSize: "10px", letterSpacing: "2px", color: S.textT, textTransform: "uppercase", marginBottom: mb }}>
@@ -206,6 +229,27 @@ export default async function HomePage() {
         <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.3px", marginTop: "18px" }}>
           sem plano, sem cartão e sem anúncio
         </p>
+      </section>
+
+      {/* Perguntas frequentes */}
+      <section className="rz-pad" style={{ paddingBottom: "96px", maxWidth: "900px", margin: "0 auto" }}>
+        <SectionTag mb="24px">perguntas frequentes</SectionTag>
+
+        <div className="rz-faq">
+          {PERGUNTAS.map(q => (
+            <details key={q.p}>
+              <summary>{q.p}</summary>
+              <p>{q.r}</p>
+            </details>
+          ))}
+        </div>
+
+        <Link
+          href="/faq"
+          style={{ display: "inline-block", fontFamily: S.mono, fontSize: "11px", color: S.textT, textDecoration: "underline", textUnderlineOffset: "3px", marginTop: "22px" }}
+        >
+          ver todas as perguntas
+        </Link>
       </section>
 
       <SiteFooter viewerName={viewerName} />

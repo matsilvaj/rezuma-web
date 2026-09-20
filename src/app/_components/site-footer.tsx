@@ -38,7 +38,7 @@ export function SiteFooter({ viewerName }: { viewerName?: string | null }) {
         </div>
       </div>
 
-      <nav style={{ display: "flex", flexWrap: "wrap", gap: "18px", marginTop: "22px" }}>
+      <nav style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "18px", marginTop: "26px" }}>
         {LINKS.map(l => (
           <Link key={l.href} href={l.href} style={{ fontFamily: S.mono, fontSize: "11px", color: S.textT, textDecoration: "none" }}>
             {l.label}
