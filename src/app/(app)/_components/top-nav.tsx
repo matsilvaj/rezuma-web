@@ -14,6 +14,7 @@ export function AppTopNav() {
 
   return (
     <header
+      className="rz-pad rz-topnav"
       style={{
         position: "sticky",
         top: 0,
@@ -22,8 +23,6 @@ export function AppTopNav() {
         borderBottom: "1px solid rgba(237,237,234,0.07)",
         display: "flex",
         alignItems: "center",
-        padding: "0 36px",
-        height: "52px",
         flexShrink: 0,
       }}
     >
@@ -31,13 +30,14 @@ export function AppTopNav() {
       <Link
         href="/"
         aria-label="Rezuma"
-        style={{ display: "flex", alignItems: "center", gap: "9px", textDecoration: "none", marginRight: "32px" }}
+        className="rz-topnav-logo"
+        style={{ display: "flex", alignItems: "center", gap: "9px", textDecoration: "none" }}
       >
         <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "23px", width: "auto" }} />
       </Link>
 
       {/* Nav, centered */}
-      <nav style={{ display: "flex", alignItems: "center", gap: "2px", flex: 1, justifyContent: "center" }}>
+      <nav className="rz-topnav-nav">
         {NAV.map(({ href, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (

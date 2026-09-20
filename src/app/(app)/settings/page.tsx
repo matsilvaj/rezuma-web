@@ -644,32 +644,26 @@ export default function SettingsPage() {
   if (!profile) return null;
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: "0", maxWidth: "740px" }}>
+    <div className="rz-settings" style={{ maxWidth: "740px" }}>
 
       {/* Sidebar nav */}
-      <nav style={{ paddingRight: "32px", borderRight: `1px solid ${S.border}` }}>
+      <nav className="rz-settings-nav">
         {SECTIONS.map(s => {
           const active = section === s.id;
           return (
             <button
               key={s.id}
               onClick={() => setSection(s.id)}
+              className="rz-settings-link"
+              data-ativo={active}
               style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
                 fontFamily: S.mono,
                 fontSize: "11px",
                 color: active ? S.textP : S.textT,
                 background: "transparent",
-                border: "none",
-                padding: "8px 0",
                 cursor: "pointer",
                 letterSpacing: "0.3px",
                 fontWeight: active ? 600 : 400,
-                borderLeft: active ? `2px solid ${S.accent}` : "2px solid transparent",
-                paddingLeft: "10px",
-                marginLeft: "-10px",
                 transition: "color 0.15s",
               }}
             >
@@ -680,7 +674,7 @@ export default function SettingsPage() {
       </nav>
 
       {/* Content */}
-      <div style={{ paddingLeft: "40px" }}>
+      <div className="rz-settings-main">
         <h2 style={{ fontFamily: S.sans, fontSize: "16px", fontWeight: 700, color: S.textP, letterSpacing: "-0.3px", marginBottom: "20px" }}>
           {SECTIONS.find(s => s.id === section)?.label}
         </h2>

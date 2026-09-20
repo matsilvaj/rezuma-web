@@ -11,11 +11,9 @@ import { Report } from "@/types";
 function ReportRow({
   report,
   unread,
-  last,
 }: {
   report: Report;
   unread: boolean;
-  last: boolean;
 }) {
   const [hover, setHover] = useState(false);
 
@@ -30,15 +28,8 @@ function ReportRow({
       href={`/dashboard/${report.id}`}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      className="rz-row"
       style={{
-        display: "grid",
-        gridTemplateColumns: "92px 1fr auto",
-        alignItems: "center",
-        gap: "16px",
-        padding: "14px 12px",
-        margin: "0 -12px",
-        borderRadius: "8px",
-        borderBottom: last ? "none" : `1px solid ${S.border}`,
         textDecoration: "none",
         background: hover ? "rgba(237,237,234,0.03)" : "transparent",
       }}
@@ -54,14 +45,10 @@ function ReportRow({
       </span>
 
       <span style={{ minWidth: 0 }}>
-        <span style={{
+        <span className="rz-row-title" style={{
           fontFamily: S.sans,
           fontSize: "13px",
           color: unread ? "rgba(237,237,234,0.72)" : "rgba(237,237,234,0.38)",
-          display: "block",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
         }}>
           {report.title}
         </span>
@@ -154,12 +141,11 @@ export default function ReportsListPage() {
       <div style={{ height: "1px", background: S.border, marginBottom: "8px" }} />
 
       <div>
-        {reports.map((report, i) => (
+        {reports.map(report => (
           <ReportRow
             key={report.id}
             report={report}
             unread={hydrated && !readIds.has(report.id)}
-            last={i === reports.length - 1}
           />
         ))}
       </div>
