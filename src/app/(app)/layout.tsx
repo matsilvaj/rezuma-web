@@ -27,7 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div style={{ minHeight: "var(--rz-vh)", display: "flex", flexDirection: "column", background: "#07080a", fontFamily: "var(--font-sans)" }}>
       <AppTopNav />
-      <main style={{ flex: 1, padding: "48px 36px", maxWidth: "900px", width: "100%", margin: "0 auto" }}>
+      <main className="rz-pad rz-app-main" style={{ flex: 1, maxWidth: "900px", width: "100%", margin: "0 auto" }}>
         {children}
       </main>
       <SupportWidget />

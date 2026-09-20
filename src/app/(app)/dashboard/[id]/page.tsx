@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -76,6 +76,31 @@ export default function ReportDetailPage() {
     if (index >= 0 && index < reports.length - 1) goTo(index + 1);
   }, [index, reports.length, goTo]);
 
+  // Arrastar na horizontal passa de relatório, como virar página. O gesto só
+  // conta quando é claramente horizontal, senão rolar a página na diagonal
+  // trocaria de relatório sem querer.
+  const toqueRef = useRef<{ x: number; y: number } | null>(null);
+
+  const aoTocar = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    toqueRef.current = t ? { x: t.clientX, y: t.clientY } : null;
+  }, []);
+
+  const aoSoltar = useCallback((e: React.TouchEvent) => {
+    const inicio = toqueRef.current;
+    const fim = e.changedTouches[0];
+    toqueRef.current = null;
+    if (!inicio || !fim) return;
+
+    const dx = fim.clientX - inicio.x;
+    const dy = fim.clientY - inicio.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+    // Arrastar para a esquerda avança, como em galeria de fotos.
+    if (dx < 0) next();
+    else prev();
+  }, [next, prev]);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "ArrowLeft"  || e.key === "ArrowUp")   prev();
@@ -121,7 +146,7 @@ export default function ReportDetailPage() {
   const glossary  = report.glossary ?? [];
 
   return (
-    <div style={{ maxWidth: "860px" }}>
+    <div style={{ maxWidth: "860px" }} onTouchStart={aoTocar} onTouchEnd={aoSoltar}>
 
       <BackLink />
 
@@ -142,10 +167,10 @@ export default function ReportDetailPage() {
       <div style={{ height: "1px", background: S.border, marginBottom: "32px" }} />
 
       {/* Corpo: coluna esquerda + direita */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", minHeight: "320px" }}>
+      <div className="rz-report" style={{ minHeight: "320px" }}>
 
         {/* Coluna esquerda */}
-        <div style={{ borderRight: `1px solid ${S.border}`, paddingRight: "28px", display: "flex", flexDirection: "column" }}>
+        <div className="rz-report-side" style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: S.mono, fontSize: "46px", fontWeight: 700, color: S.textP, letterSpacing: "-2px", lineHeight: 1, marginBottom: "10px" }}>
               {report.ticker}
@@ -211,7 +236,7 @@ export default function ReportDetailPage() {
         </div>
 
         {/* Coluna direita */}
-        <div style={{ paddingLeft: "28px", display: "flex", flexDirection: "column" }}>
+        <div className="rz-report-main" style={{ display: "flex", flexDirection: "column" }}>
 
           {/* DESTAQUE */}
           <div style={{ marginBottom: "24px" }}>
@@ -310,10 +335,10 @@ export default function ReportDetailPage() {
       </div>
 
       {/* Navegação */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "40px", marginTop: "40px", borderTop: `1px solid ${S.border}` }}>
+      <div className="rz-relnav" style={{ paddingTop: "40px", marginTop: "40px", borderTop: `1px solid ${S.border}` }}>
         <button
           onClick={prev} disabled={index <= 0} aria-label="Relatório anterior"
-          style={{ fontFamily: S.mono, fontSize: "10px", color: index <= 0 ? S.textT : "rgba(237,237,234,0.35)", background: "transparent", border: "none", padding: 0, cursor: index <= 0 ? "default" : "pointer", opacity: index <= 0 ? 0.3 : 1, letterSpacing: "0.3px" }}
+          style={{ fontFamily: S.mono, fontSize: "10px", color: index <= 0 ? S.textT : "rgba(237,237,234,0.35)", cursor: index <= 0 ? "default" : "pointer", opacity: index <= 0 ? 0.3 : 1, letterSpacing: "0.3px" }}
         >
           relatório anterior
         </button>
@@ -322,7 +347,7 @@ export default function ReportDetailPage() {
         </Link>
         <button
           onClick={next} disabled={index >= reports.length - 1} aria-label="Próximo relatório"
-          style={{ fontFamily: S.mono, fontSize: "10px", color: index >= reports.length - 1 ? S.textT : "rgba(237,237,234,0.35)", background: "transparent", border: "none", padding: 0, cursor: index >= reports.length - 1 ? "default" : "pointer", opacity: index >= reports.length - 1 ? 0.3 : 1, letterSpacing: "0.3px" }}
+          style={{ fontFamily: S.mono, fontSize: "10px", color: index >= reports.length - 1 ? S.textT : "rgba(237,237,234,0.35)", cursor: index >= reports.length - 1 ? "default" : "pointer", opacity: index >= reports.length - 1 ? 0.3 : 1, letterSpacing: "0.3px" }}
         >
           próximo relatório
         </button>
