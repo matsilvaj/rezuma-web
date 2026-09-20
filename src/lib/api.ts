@@ -60,6 +60,11 @@ export const assetsApi = {
 };
 
 // Reports
+export const contactApi = {
+  send: (body: { nome: string; email: string; mensagem: string; website?: string }) =>
+    apiFetch("/api/v1/contact/", { method: "POST", body: JSON.stringify(body) }),
+};
+
 export const reportsApi = {
   list: (page = 1) => apiFetch(`/api/v1/reports/?page=${page}`),
 };
@@ -67,6 +72,8 @@ export const reportsApi = {
 
 // Users
 export const usersApi = {
+  /** Apaga a conta e todos os dados. Definitivo. */
+  deleteAccount: () => apiFetch("/api/v1/users/me", { method: "DELETE" }),
   getProfile: () => apiFetch("/api/v1/users/me"),
   updateProfile: (data: Record<string, unknown>) =>
     apiFetch("/api/v1/users/me", { method: "PATCH", body: JSON.stringify(data) }),

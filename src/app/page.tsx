@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroSection } from "./_components/hero-section";
 import { Testimonials } from "./_components/testimonials";
 import { DeviceShowcase } from "./_components/device-showcase";
+import { SiteFooter } from "./_components/site-footer";
 import { getViewerName } from "@/lib/session";
 
 const S = {
@@ -207,38 +208,7 @@ export default async function HomePage() {
         </p>
       </section>
 
-      {/* Footer */}
-      <footer className="rz-pad" style={{ borderTop: `1px solid ${S.border}`, maxWidth: "900px", margin: "0 auto", paddingTop: "28px", paddingBottom: "40px" }}>
-        {/* Logo e sessão nos cantos; o texto legal centralizado abaixo. */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px" }}>
-          <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
-          <div style={{ display: "flex", gap: "24px" }}>
-            {viewerName ? (
-              <Link href="/dashboard" style={{ fontSize: "12px", color: S.textS, textDecoration: "none" }}>
-                Olá, {viewerName}
-              </Link>
-            ) : (
-              <>
-                <Link href="/login"    style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Entrar</Link>
-                <Link href="/register" style={{ fontSize: "12px", color: S.textT, textDecoration: "none" }}>Criar conta</Link>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: "32px" }}>
-          <p style={{ fontSize: "11px", color: S.textT, lineHeight: 1.8, maxWidth: "560px", margin: "0 auto 14px" }}>
-            Os resumos são feitos a partir de documentos públicos divulgados pelas
-            próprias companhias e fundos. Não são recomendação de investimento,
-            análise de valores mobiliários nem consultoria financeira. Toda
-            decisão é sua.
-          </p>
-
-          <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.3px", margin: 0 }}>
-            © {new Date().getFullYear()} Rezuma. Todos os direitos reservados.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter viewerName={viewerName} />
     </main>
   );
 }
