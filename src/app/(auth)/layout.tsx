@@ -38,7 +38,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
 
-      <SiteFooter />
+      <SiteFooter compacto />
     </div>
   );
 }
