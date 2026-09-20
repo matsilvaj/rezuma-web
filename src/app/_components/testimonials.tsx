@@ -106,7 +106,7 @@ export function Testimonials() {
   }, []);
 
   return (
-    <section style={{ padding: "0 36px 120px", maxWidth: "900px", margin: "0 auto" }}>
+    <section className="rz-pad" style={{ paddingBottom: "120px", maxWidth: "900px", margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px" }}>
         <p style={{ fontFamily: S.mono, fontSize: "10px", letterSpacing: "2px", color: S.textT, textTransform: "uppercase" }}>
           quem usa
@@ -135,7 +135,7 @@ export function Testimonials() {
             key={q.name}
             style={{
               flex: "0 0 auto",
-              width: "min(400px, 82vw)",
+              width: "min(400px, 86vw)",
               scrollSnapAlign: "start",
               background: S.surface,
               border: `1px solid ${S.border}`,

@@ -89,7 +89,6 @@ function drawCurve(
 
 export function HeroSection({ viewerName }: { viewerName?: string | null }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -103,7 +102,6 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
     let rafId = 0;
     let time = 0;
     let mx = 0, my = 0, smx = 0, smy = 0;
-    let scrollY = 0;
 
     function resize() {
       // A interface roda sob CSS zoom (--rz-zoom), então a janela não serve de
@@ -134,13 +132,6 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
       my = ((e.clientY - rect.top)  / rect.height) * 2 - 1;
     };
 
-    const onScroll = () => {
-      scrollY = Math.min(window.scrollY / 600, 1);
-      if (scrollIndicatorRef.current) {
-        scrollIndicatorRef.current.style.opacity = String(Math.max(0, 1 - scrollY * 4));
-      }
-    };
-
     const tick = () => {
       smx += (mx - smx) * 0.032;
       smy += (my - smy) * 0.032;
@@ -155,14 +146,12 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
     resize();
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMouse);
-    window.addEventListener("scroll", onScroll, { passive: true });
     rafId = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouse);
-      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -190,13 +179,15 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
       />
 
       <nav
+        className="rz-pad"
         style={{
           position: "relative",
           zIndex: 10,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "22px 36px",
+          paddingTop: "22px",
+          paddingBottom: "22px",
         }}
       >
         <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "25px", width: "auto" }} />
@@ -244,9 +235,8 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
         </h1>
 
         <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.38)", lineHeight: 1.75, maxWidth: "390px", marginBottom: "38px" }}>
-          Assim que a CVM ou o FNET publica um documento dos seus FIIs e ações,
-          ele é lido e devolvido em quatro parágrafos, no seu e-mail e no
-          Telegram, no mesmo dia.
+          Cada relatório dos seus FIIs e ações vira quatro parágrafos no seu
+          e-mail e no Telegram, no mesmo dia.
         </p>
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
@@ -254,7 +244,7 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
             href={viewerName ? "/dashboard" : "/register"}
             style={{ fontFamily: "var(--font-sans)", background: "#ededea", color: "#07080a", padding: "12px 26px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, letterSpacing: "-0.2px", textDecoration: "none" }}
           >
-            {viewerName ? "Ir para os relatórios" : "Criar conta grátis"}
+            {viewerName ? "Ir para os relatórios" : "Começar agora"}
           </Link>
           <a
             href="#exemplo"
@@ -269,16 +259,6 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
         </p>
       </div>
 
-      <div
-        ref={scrollIndicatorRef}
-        aria-hidden="true"
-        style={{ position: "absolute", bottom: "32px", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", zIndex: 10 }}
-      >
-        <div style={{ width: "1px", height: "36px", background: "rgba(237,237,234,0.15)" }} />
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "1.8px", color: "rgba(237,237,234,0.15)", textTransform: "uppercase" }}>
-          scroll
-        </span>
-      </div>
     </section>
   );
 }
