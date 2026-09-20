@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HeroSection } from "./_components/hero-section";
 import { Testimonials } from "./_components/testimonials";
+import { DeviceShowcase } from "./_components/device-showcase";
 import { getViewerName } from "@/lib/session";
 
 const S = {
@@ -12,7 +13,6 @@ const S = {
   textS:      "rgba(237,237,234,0.40)",
   textT:      "rgba(237,237,234,0.18)",
   accent:     "#5eb88a",
-  danger:     "rgba(237,120,100,0.92)",
   sans:       "var(--font-sans)",
   mono:       "var(--font-mono)",
 } as const;
@@ -30,50 +30,42 @@ const STEPS = [
   {
     n: "01",
     title: "Você diz o que tem na carteira",
-    desc: "Informe os FIIs e as ações que acompanha, até trinta por conta. Sem cartão, sem plano, sem custo.",
+    desc: "Informe os FIIs e as ações que você acompanha. Leva um minuto.",
   },
   {
     n: "02",
     title: "Nós vigiamos as fontes oficiais",
-    desc: "CVM, FNET e B3 são conferidas todos os dias. Relatório gerencial, informe mensal, fato relevante, resultado trimestral: quando um documento seu é publicado, ele é baixado na hora.",
+    desc: "CVM, FNET e B3 conferidas todos os dias. Documento publicado é documento baixado na hora.",
   },
   {
     n: "03",
     title: "O documento vira quatro parágrafos",
-    desc: "Um PDF de oitenta páginas é lido inteiro e devolvido no tamanho de uma mensagem, em português comum, com os números conferidos contra o próprio documento.",
+    desc: "O documento inteiro é lido e devolvido no tamanho de uma mensagem, com cada termo técnico explicado.",
   },
   {
     n: "04",
     title: "Chega onde você já olha",
-    desc: "E-mail e Telegram, no mesmo dia da publicação. Tudo também fica guardado no painel, organizado por ativo e por período.",
+    desc: "E-mail e Telegram no mesmo dia, e tudo guardado no painel.",
   },
 ] as const;
 
 const ANATOMY = [
   {
     label: "Destaque",
-    desc: "O número que decide o trimestre, em uma frase. Se o lucro caiu, é a primeira coisa que você lê.",
+    desc: "O resultado do período logo na primeira linha: quanto rendeu e o que explica esse número.",
   },
   {
     label: "Movimentações",
-    desc: "O que mudou desde o documento anterior: aquisição, emissão, troca de gestor, corte de distribuição.",
+    desc: "Aquisição, emissão, troca de gestor, corte de distribuição.",
   },
   {
     label: "Atenção",
-    desc: "O que ainda não é problema, mas pode virar. Vacância subindo três meses seguidos aparece aqui antes de aparecer no seu rendimento.",
+    desc: "O que ainda não é problema, mas pode virar.",
   },
   {
     label: "Glossário",
-    desc: "Todo termo técnico do resumo vem explicado em uma linha. Você não precisa saber o que é build to suit para entender o que aconteceu.",
+    desc: "Todo termo técnico explicado em uma linha, ali mesmo.",
   },
-] as const;
-
-/* Métricas do exemplo, na ordem em que o painel prioriza para banco. */
-const EXAMPLE_METRICS = [
-  { value: "8,4%",  label: "retorno sobre patrimônio", size: 22, delta: null },
-  { value: "5,6%",  label: "inadimplência",            size: 18, delta: null },
-  { value: "11,3%", label: "índice de Basileia",       size: 16, delta: "▼ 2,6 p.p." },
-  { value: "28,0%", label: "índice de eficiência",     size: 14, delta: null },
 ] as const;
 
 function SectionTag({ children, mb = "40px" }: { children: React.ReactNode; mb?: string }) {
@@ -92,32 +84,28 @@ export default async function HomePage() {
       <HeroSection viewerName={viewerName} />
 
       {/* O problema */}
-      <section style={{ padding: "120px 36px 0", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="rz-pad" style={{ paddingTop: "88px", maxWidth: "900px", margin: "0 auto" }}>
         <p style={{ fontSize: "26px", fontWeight: 700, color: S.textP, letterSpacing: "-1px", lineHeight: 1.35, maxWidth: "620px", marginBottom: "20px" }}>
           Ninguém deixa de ler os relatórios por preguiça. Deixa porque são oitenta
           páginas de linguagem contábil por ativo, todo mês.
         </p>
         <p style={{ fontSize: "15px", color: S.textS, lineHeight: 1.8, maxWidth: "560px" }}>
-          Então o investidor faz o que dá: olha o rendimento, acha que está tudo bem
-          e continua aportando. O problema aparece um ou dois trimestres depois,
-          quando já virou preço. O Rezuma existe para fechar essa distância: não
-          para dizer o que comprar, mas para você saber o que aconteceu enquanto
-          ainda dá tempo de decidir.
+          Ninguém lê oitenta páginas atrás de três frases. Você procura o
+          rendimento, vê que veio parecido com o do mês passado e fecha. O que
+          mudou de verdade continua lá dentro, escrito para contador.
         </p>
       </section>
 
       {/* Como funciona */}
-      <section style={{ padding: "88px 36px 0", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="rz-pad" style={{ paddingTop: "64px", maxWidth: "900px", margin: "0 auto" }}>
         <SectionTag>como funciona</SectionTag>
 
         <div>
           {STEPS.map((step, i) => (
             <div
               key={step.n}
+              className="rz-steps"
               style={{
-                display: "grid",
-                gridTemplateColumns: "80px 1fr",
-                gap: "32px",
                 padding: "30px 0",
                 borderTop: i === 0 ? `1px solid ${S.border}` : undefined,
                 borderBottom: `1px solid ${S.border}`,
@@ -141,14 +129,13 @@ export default async function HomePage() {
       </section>
 
       {/* Anatomia do resumo */}
-      <section style={{ padding: "88px 36px 0", maxWidth: "900px", margin: "0 auto" }}>
+      <section className="rz-pad" style={{ paddingTop: "64px", maxWidth: "900px", margin: "0 auto" }}>
         <SectionTag mb="16px">o que vem em cada resumo</SectionTag>
         <p style={{ fontSize: "14px", color: S.textS, lineHeight: 1.75, maxWidth: "520px", marginBottom: "36px" }}>
-          Todo resumo sai na mesma estrutura, seja um FII ou uma ação. Você aprende a
-          ler uma vez e vale para os outros.
+          Todo resumo sai na mesma estrutura, seja um FII ou uma ação.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+        <div className="rz-grid-2">
           {ANATOMY.map(item => (
             <div
               key={item.label}
@@ -166,184 +153,35 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
-
-        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, lineHeight: 1.8, marginTop: "20px" }}>
-          números conferidos contra o texto do próprio documento: na dúvida, a
-          métrica é omitida em vez de exibida errada
-        </p>
       </section>
 
-      {/* Exemplo real */}
-      <section id="exemplo" style={{ padding: "88px 36px 0", maxWidth: "900px", margin: "0 auto" }}>
-        <SectionTag mb="16px">exemplo real</SectionTag>
+      {/* Demonstração */}
+      <section id="exemplo" className="rz-pad" style={{ paddingTop: "64px", maxWidth: "900px", margin: "0 auto" }}>
+        <SectionTag mb="16px">como aparece</SectionTag>
         <p style={{ fontSize: "14px", color: S.textS, lineHeight: 1.75, maxWidth: "520px", marginBottom: "36px" }}>
-          Resultado do 2º trimestre do Banco do Brasil, exatamente como aparece no
-          painel de quem acompanha BBAS3.
+          O informe mensal do HGLG11, do jeito que chega para quem acompanha o fundo.
         </p>
 
-        <div
-          style={{
-            background: S.surface,
-            border: `1px solid ${S.borderSt}`,
-            borderRadius: "12px",
-            padding: "26px 28px",
-          }}
-        >
-          {/* Breadcrumb */}
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px", marginBottom: "7px" }}>
-            <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.3px", margin: 0 }}>
-              relatórios / bbas3 / 2t 2026
-            </p>
-            <span style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, flexShrink: 0 }}>12 ago</span>
-          </div>
-          <p style={{ fontSize: "14px", fontWeight: 500, color: "rgba(237,237,234,0.45)", lineHeight: 1.4, margin: 0 }}>
-            Apresentação do Resultado 2T26
-          </p>
-
-          <div style={{ height: "1px", background: S.border, margin: "20px 0 28px" }} />
-
-          <div style={{ display: "grid", gridTemplateColumns: "220px 1fr" }}>
-            {/* Coluna esquerda */}
-            <div style={{ borderRight: `1px solid ${S.border}`, paddingRight: "28px", display: "flex", flexDirection: "column" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: S.mono, fontSize: "46px", fontWeight: 700, color: S.textP, letterSpacing: "-2px", lineHeight: 1, marginBottom: "10px" }}>
-                  BBAS3
-                </div>
-                <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.2px", lineHeight: 1.5 }}>
-                  BCO BRASIL S.A.
-                </div>
-                <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.2px", lineHeight: 1.5, marginBottom: "24px" }}>
-                  2º trimestre de 2026
-                </div>
-
-                <div style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, letterSpacing: "0.4px", marginBottom: "14px" }}>
-                  variação vs 1s26
-                </div>
-
-                {EXAMPLE_METRICS.map((m, i) => (
-                  <div key={m.label} style={{ marginBottom: i < EXAMPLE_METRICS.length - 1 ? "16px" : "0" }}>
-                    <div style={{
-                      fontFamily: S.mono,
-                      fontSize: `${m.size}px`,
-                      fontWeight: 700,
-                      color: m.delta ? S.danger : S.textP,
-                      letterSpacing: i === 0 ? "-1px" : "-0.5px",
-                      lineHeight: 1,
-                    }}>
-                      {m.value}
-                    </div>
-                    <div style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, letterSpacing: "0.2px", marginTop: "4px" }}>
-                      {m.label}
-                    </div>
-                    {m.delta && (
-                      <div style={{ fontFamily: S.mono, fontSize: "9px", color: S.danger, opacity: 0.85, marginTop: "3px" }}>
-                        {m.delta}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: "16px", marginTop: "28px" }}>
-                <div style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.2px", lineHeight: 1.8 }}>
-                  gerado em<br />12 ago 2026 · 08:14
-                </div>
-              </div>
-            </div>
-
-            {/* Coluna direita */}
-            <div style={{ paddingLeft: "28px" }}>
-              <div style={{ ...LABEL, marginBottom: "12px" }}>Destaque</div>
-              <p style={{ fontSize: "14px", color: "rgba(237,237,234,0.55)", lineHeight: 1.85, margin: 0 }}>
-                Lucro líquido ajustado de{" "}
-                <strong style={{ color: S.textP, fontWeight: 700 }}>R$ 3,9 bilhões</strong> no 2T26,
-                crescimento de 13,9% frente ao 1T26 e alta de 3,3% na comparação anual.
-                Margem financeira bruta atingiu{" "}
-                <strong style={{ color: S.textP, fontWeight: 700 }}>R$ 27,5 bilhões</strong>,
-                praticamente estável (+0,2% trimestral) mas forte na comparação com 2T25 (+9,6%).
-              </p>
-
-              <div style={{ borderLeft: "2px solid rgba(94,184,138,0.35)", paddingLeft: "16px", marginTop: "16px" }}>
-                <p style={{ fontSize: "13px", color: "rgba(237,237,234,0.40)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>
-                  <strong style={{ color: "rgba(237,237,234,0.62)", fontWeight: 700 }}>
-                    Carteira de crédito expandida em R$ 1,313 trilhão
-                  </strong>
-                  , crescimento de 1,5% em relação a junho de 2025, com destaque para a
-                  carteira agro que soma R$ 422 bilhões (+4,1% anual).
-                </p>
-              </div>
-
-              <div style={{ height: "1px", background: S.border, margin: "24px 0 20px" }} />
-
-              <div style={{ ...LABEL, marginBottom: "12px" }}>Movimentações</div>
-              <p style={{ fontSize: "14px", color: "rgba(237,237,234,0.55)", lineHeight: 1.85, margin: 0 }}>
-                Inadimplência acima de 90 dias registrada em 5,61% em junho de 2026,
-                queda de 2,1% frente ao trimestre anterior. Índice de Basileia (CET1)
-                em 11,27%, redução de 0,32 ponto percentual em relação a março de 2026.
-                Receitas com prestação de serviços subiram 3,4% trimestral (+4,2% anual)
-                para R$ 9,1 bilhões.
-              </p>
-
-              {/* Glossário */}
-              <div style={{ background: "rgba(237,237,234,0.02)", border: `1px solid ${S.border}`, borderRadius: "6px", padding: "16px 18px", marginTop: "24px" }}>
-                <div style={{ ...LABEL, marginBottom: "14px" }}>Glossário</div>
-                <div style={{ fontFamily: S.mono, fontSize: "11px", fontWeight: 700, color: S.textP, letterSpacing: "0.2px", marginBottom: "4px" }}>
-                  índice de Basileia
-                </div>
-                <p style={{ fontSize: "12px", color: "rgba(237,237,234,0.38)", lineHeight: 1.65, margin: 0 }}>
-                  Medida de segurança de um banco: mostra se ele tem capital próprio
-                  suficiente para aguentar perdas. No Brasil o mínimo exigido é 8%.
-                </p>
-              </div>
-
-              <div style={{ height: "1px", background: S.border, margin: "24px 0 20px" }} />
-
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
-                <div>
-                  <div style={{ ...LABEL, marginBottom: "10px" }}>Entregue via</div>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    {["e-mail", "telegram"].map(ch => (
-                      <span key={ch} style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, border: `1px solid ${S.borderSt}`, borderRadius: "5px", padding: "3px 10px", letterSpacing: "0.3px" }}>
-                        {ch}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ ...LABEL, marginBottom: "10px" }}>Documento</div>
-                  <span style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, textDecoration: "underline", textUnderlineOffset: "3px" }}>
-                    ver original
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, lineHeight: 1.8, marginTop: "16px" }}>
-          o documento original fica sempre a um clique: o resumo não substitui a
-          fonte, encurta o caminho até ela
-        </p>
+        <DeviceShowcase />
       </section>
 
-      <div style={{ height: "120px" }} />
+      <div style={{ height: "72px" }} />
 
       {/* Depoimentos */}
       <Testimonials />
 
-      {/* Custo */}
-      <section style={{ padding: "0 36px 120px", maxWidth: "900px", margin: "0 auto" }}>
-        <SectionTag mb="16px">quanto custa</SectionTag>
+      {/* Fechamento */}
+      <section className="rz-pad" style={{ paddingBottom: "80px", maxWidth: "900px", margin: "0 auto" }}>
+        <SectionTag mb="16px">comece</SectionTag>
 
-        <p style={{ fontSize: "26px", fontWeight: 700, color: S.textP, letterSpacing: "-1px", lineHeight: 1.35, marginBottom: "18px" }}>
-          Nada.
+        <p style={{ fontSize: "26px", fontWeight: 700, color: S.textP, letterSpacing: "-1px", lineHeight: 1.35, maxWidth: "560px", marginBottom: "18px" }}>
+          Cadastre seus ativos hoje e leia o próximo relatório em quatro
+          parágrafos, não em oitenta páginas.
         </p>
         <p style={{ fontSize: "14px", color: S.textS, lineHeight: 1.8, maxWidth: "520px", marginBottom: "32px" }}>
-          O Rezuma é gratuito, sem anúncios e sem plano pago. É um projeto
-          independente: o servidor e a leitura dos documentos são pagos por
-          quem mantém, e quem quiser ajudar pode mandar um Pix de qualquer valor
-          de dentro do painel. Doar não libera nada a mais. Todo mundo usa o
-          mesmo Rezuma.
+          Leva dois minutos para começar. Daí em diante, cada documento novo dos
+          seus FIIs e ações chega resumido no seu e-mail e no Telegram, no mesmo
+          dia em que é publicado.
         </p>
 
         <Link
@@ -361,12 +199,16 @@ export default async function HomePage() {
             letterSpacing: "-0.1px",
           }}
         >
-          {viewerName ? "Ir para os relatórios" : "Criar conta grátis"}
+          {viewerName ? "Ir para os relatórios" : "Criar conta"}
         </Link>
+
+        <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.3px", marginTop: "18px" }}>
+          sem plano, sem cartão e sem anúncio
+        </p>
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: `1px solid ${S.border}`, maxWidth: "900px", margin: "0 auto", padding: "28px 36px 40px" }}>
+      <footer className="rz-pad" style={{ borderTop: `1px solid ${S.border}`, maxWidth: "900px", margin: "0 auto", paddingTop: "28px", paddingBottom: "40px" }}>
         {/* Logo e sessão nos cantos; o texto legal centralizado abaixo. */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px" }}>
           <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
@@ -386,9 +228,10 @@ export default async function HomePage() {
 
         <div style={{ textAlign: "center", marginTop: "32px" }}>
           <p style={{ fontSize: "11px", color: S.textT, lineHeight: 1.8, maxWidth: "560px", margin: "0 auto 14px" }}>
-            O Rezuma resume documentos públicos divulgados pelas próprias companhias e
-            fundos. Não é recomendação de investimento, análise de valores mobiliários
-            nem consultoria financeira. Toda decisão é sua.
+            Os resumos são feitos a partir de documentos públicos divulgados pelas
+            próprias companhias e fundos. Não são recomendação de investimento,
+            análise de valores mobiliários nem consultoria financeira. Toda
+            decisão é sua.
           </p>
 
           <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "0.3px", margin: 0 }}>
