@@ -19,6 +19,15 @@ const S = {
 
 type Erros = { nome?: string; email?: string; mensagem?: string; form?: string };
 
+const MOTIVOS = [
+  { valor: "erro",     rotulo: "Erro em um resumo" },
+  { valor: "sugestao", rotulo: "Sugestão ou ideia" },
+  { valor: "duvida",   rotulo: "Dúvida" },
+  { valor: "outro",    rotulo: "Outro assunto" },
+] as const;
+
+type Motivo = typeof MOTIVOS[number]["valor"];
+
 function Rotulo({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.6px", textTransform: "uppercase", color: S.textT, fontWeight: 600, marginBottom: "6px" }}>
@@ -41,6 +50,7 @@ const campo: React.CSSProperties = {
 };
 
 export function ContactForm() {
+  const [assunto, setAssunto] = useState<Motivo>("erro");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [mensagem, setMensagem] = useState("");
@@ -65,7 +75,7 @@ export function ContactForm() {
 
     setEnviando(true);
     try {
-      await contactApi.send({ nome: nome.trim(), email: email.trim().toLowerCase(), mensagem: mensagem.trim(), website });
+      await contactApi.send({ assunto, nome: nome.trim(), email: email.trim().toLowerCase(), mensagem: mensagem.trim(), website });
       setEnviado(true);
     } catch (err) {
       const msg = (err instanceof Error ? err.message : "").toLowerCase();
@@ -95,6 +105,36 @@ export function ContactForm() {
 
   return (
     <form onSubmit={enviar} noValidate style={{ display: "flex", flexDirection: "column", gap: "18px", maxWidth: "520px" }}>
+      <div>
+        <Rotulo>motivo do contato</Rotulo>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          {MOTIVOS.map(m => {
+            const ativo = assunto === m.valor;
+            return (
+              <button
+                key={m.valor}
+                type="button"
+                onClick={() => setAssunto(m.valor)}
+                aria-pressed={ativo}
+                style={{
+                  fontFamily: S.sans,
+                  fontSize: "12px",
+                  fontWeight: ativo ? 600 : 400,
+                  color: ativo ? "#07080a" : S.textS,
+                  background: ativo ? S.textP : "transparent",
+                  border: `1px solid ${ativo ? S.textP : S.borderS}`,
+                  borderRadius: "999px",
+                  padding: "7px 14px",
+                  cursor: "pointer",
+                }}
+              >
+                {m.rotulo}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div>
         <Rotulo>nome</Rotulo>
         <input

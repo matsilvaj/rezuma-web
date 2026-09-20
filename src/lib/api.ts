@@ -61,7 +61,7 @@ export const assetsApi = {
 
 // Reports
 export const contactApi = {
-  send: (body: { nome: string; email: string; mensagem: string; website?: string }) =>
+  send: (body: { assunto: string; nome: string; email: string; mensagem: string; website?: string }) =>
     apiFetch("/api/v1/contact/", { method: "POST", body: JSON.stringify(body) }),
 };
 

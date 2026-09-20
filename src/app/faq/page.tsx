@@ -36,15 +36,6 @@ export default function FaqPage() {
         há o que mostrar até a próxima publicação dele.
       </p>
 
-      <h2>Por que um número que está no documento não aparece no resumo?</h2>
-      <p>
-        Porque não foi possível confirmar o valor. Os números extraídos são
-        conferidos contra o próprio texto do documento, e o que não bate é
-        descartado. A escolha é deliberada: número errado é pior que número
-        ausente, principalmente quando se trata de dinheiro. O valor continua no
-        documento original, que fica a um clique.
-      </p>
-
       <h2>Posso confiar no resumo para decidir?</h2>
       <p>
         Use o resumo para saber o que aconteceu e onde olhar. Ele é gerado

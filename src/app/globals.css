@@ -239,6 +239,53 @@
   }
 }
 
+/* Perguntas recolhidas na landing. Usa <details>, que abre e fecha sem
+   JavaScript e já vem com o comportamento de acessibilidade pronto. */
+.rz-faq details {
+  border-bottom: 1px solid var(--rz-border);
+}
+.rz-faq details:first-of-type {
+  border-top: 1px solid var(--rz-border);
+}
+.rz-faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(237, 237, 234, 0.72);
+}
+.rz-faq summary::-webkit-details-marker {
+  display: none;
+}
+.rz-faq summary::after {
+  content: "+";
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1;
+  color: rgba(237, 237, 234, 0.30);
+}
+.rz-faq details[open] summary {
+  color: var(--rz-text-primary);
+}
+.rz-faq details[open] summary::after {
+  content: "-";
+}
+.rz-faq p {
+  margin: 0 0 20px;
+  padding-right: 34px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.85;
+  color: rgba(237, 237, 234, 0.45);
+}
+
 /* Texto corrido das páginas de conteúdo (privacidade, termos, sobre, faq).
    Elas são o único lugar do projeto com texto longo, e escrever isso com
    style={} em cada parágrafo seria insustentável. */
