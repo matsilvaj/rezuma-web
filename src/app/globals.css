@@ -239,6 +239,60 @@
   }
 }
 
+/* Texto corrido das páginas de conteúdo (privacidade, termos, sobre, faq).
+   Elas são o único lugar do projeto com texto longo, e escrever isso com
+   style={} em cada parágrafo seria insustentável. */
+.rz-prosa {
+  margin-top: 34px;
+  font-family: var(--font-sans);
+  color: rgba(237, 237, 234, 0.55);
+  font-size: 14px;
+  line-height: 1.85;
+}
+.rz-prosa h2 {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--rz-text-primary);
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+  margin: 38px 0 12px;
+}
+.rz-prosa h3 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(237, 237, 234, 0.45);
+  margin: 26px 0 8px;
+}
+.rz-prosa p {
+  margin: 0 0 14px;
+}
+.rz-prosa ul {
+  margin: 0 0 14px;
+  padding-left: 18px;
+  list-style: disc;
+}
+.rz-prosa li {
+  margin-bottom: 8px;
+}
+.rz-prosa strong {
+  color: rgba(237, 237, 234, 0.82);
+  font-weight: 600;
+}
+.rz-prosa a {
+  color: var(--rz-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rz-prosa hr {
+  border: none;
+  border-top: 1px solid var(--rz-border);
+  margin: 34px 0;
+}
+
 /* Barra do topo. No celular quebra em duas linhas: logo e sair em cima,
    menu centralizado embaixo. Numa linha só, "sair" era cortado pela borda. */
 .rz-topnav {

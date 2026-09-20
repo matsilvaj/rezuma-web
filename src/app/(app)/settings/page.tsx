@@ -490,6 +490,39 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
   const [passErrs,       setPassErrs]       = useState<{ current?: string; new?: string; confirm?: string }>({});
   const [savingPass,     setSavingPass]     = useState(false);
 
+  // Exclusão de conta
+  const [abrirExclusao,  setAbrirExclusao]  = useState(false);
+  const [senhaExclusao,  setSenhaExclusao]  = useState("");
+  const [erroExclusao,   setErroExclusao]   = useState<string | null>(null);
+  const [excluindo,      setExcluindo]      = useState(false);
+
+  async function handleExcluirConta(e: React.FormEvent) {
+    e.preventDefault();
+    if (!senhaExclusao) { setErroExclusao("Informe sua senha para confirmar."); return; }
+
+    setExcluindo(true);
+    try {
+      // Confirma a senha antes: sem isso, bastaria a sessão aberta num
+      // computador emprestado para apagar a conta de alguém.
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: profile.email ?? "",
+        password: senhaExclusao,
+      });
+      if (error) { setErroExclusao("Senha incorreta."); return; }
+
+      await usersApi.deleteAccount();
+      await supabase.auth.signOut();
+      // Recarrega em vez de navegar: garante que nada da sessão antiga
+      // continue em memória.
+      window.location.href = "/";
+    } catch {
+      setErroExclusao("Não foi possível excluir agora. Tente novamente.");
+    } finally {
+      setExcluindo(false);
+    }
+  }
+
   async function handleEmailChange(e: React.FormEvent) {
     e.preventDefault();
     const next: typeof emailErrs = {};
@@ -618,6 +651,56 @@ function SegurancaSection({ profile }: { profile: UserProfile }) {
           </div>
           <div><SubmitButton loading={savingPass}>{savingPass ? "alterando…" : "alterar senha"}</SubmitButton></div>
         </form>
+      </div>
+
+      <Divider />
+
+      {/* Exclusão de conta */}
+      <div>
+        <div style={{ fontFamily: S.mono, fontSize: "9px", letterSpacing: "1.6px", textTransform: "uppercase" as const, color: "rgba(237,100,80,0.55)", fontWeight: 600, marginBottom: "10px" }}>
+          excluir conta
+        </div>
+        <p style={{ fontFamily: S.sans, fontSize: "13px", color: S.textS, lineHeight: 1.7, marginBottom: "16px", maxWidth: "440px" }}>
+          Apaga a conta, os ativos cadastrados, as preferências e o vínculo do
+          Telegram. É imediato e não dá para desfazer.
+        </p>
+
+        {abrirExclusao ? (
+          <form onSubmit={handleExcluirConta} noValidate style={{ background: "rgba(237,80,50,0.04)", border: "1px solid rgba(237,80,50,0.16)", borderRadius: "8px", padding: "16px", maxWidth: "440px", display: "flex", flexDirection: "column", gap: "12px" }}>
+            <p style={{ fontFamily: S.sans, fontSize: "13px", color: "rgba(237,150,130,0.75)", lineHeight: 1.6, margin: 0 }}>
+              Confirme sua senha para excluir a conta de <strong>{profile.email}</strong>.
+            </p>
+            <FieldInput
+              id="senha-exclusao"
+              type="password"
+              placeholder="Sua senha"
+              value={senhaExclusao}
+              onChange={v => { setSenhaExclusao(v); setErroExclusao(null); }}
+              error={erroExclusao}
+              autoComplete="current-password"
+            />
+            <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                type="submit"
+                disabled={excluindo}
+                style={{ fontFamily: S.sans, fontSize: "13px", fontWeight: 600, color: "#ededea", background: "rgba(200,60,45,0.85)", border: "none", borderRadius: "7px", padding: "9px 18px", cursor: excluindo ? "default" : "pointer" }}
+              >
+                {excluindo ? "excluindo…" : "excluir definitivamente"}
+              </button>
+              <GhostButton onClick={() => { setAbrirExclusao(false); setSenhaExclusao(""); setErroExclusao(null); }}>
+                cancelar
+              </GhostButton>
+            </div>
+          </form>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setAbrirExclusao(true)}
+            style={{ fontFamily: S.mono, fontSize: "10px", color: S.danger, background: "transparent", border: "1px solid rgba(237,80,60,0.20)", borderRadius: "5px", padding: "7px 14px", cursor: "pointer", letterSpacing: "0.3px" }}
+          >
+            excluir minha conta
+          </button>
+        )}
       </div>
     </div>
   );
