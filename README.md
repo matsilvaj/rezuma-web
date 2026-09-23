@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# rezuma-web
 
-## Getting Started
+Frontend do **Rezuma**: resumos automáticos, feitos com IA, dos documentos que FIIs e ações publicam na B3 e na CVM (relatórios gerenciais, fatos relevantes, ITR/DFP etc.). O usuário cadastra os ativos que acompanha e recebe os resumos no painel, por e-mail e pelo Telegram.
 
-First, run the development server:
+O projeto é gratuito e se mantém com doações via Pix.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS 4** + componentes **shadcn/ui** (Radix UI) + ícones `lucide-react`
+- **Supabase** (`@supabase/ssr`) para autenticação e sessão
+- `sonner` para toasts, `next-themes` para tema claro/escuro, `qrcode.react` para o QR Code do Pix
+- Vercel Analytics e Speed Insights
+
+O backend fica em [`../rezuma-api`](../rezuma-api): FastAPI, com os resumos gerados pelo Claude Haiku.
+
+## Estrutura
+
+```
+src/
+├── app/
+│   ├── (auth)/        login, cadastro, esqueci/redefinir senha
+│   ├── (app)/         área logada: dashboard, detalhe do relatório, ativos, configurações
+│   ├── api/auth/      rota de logout
+│   ├── _components/   seções da landing page
+│   ├── contato, faq, sobre, privacidade, termos
+│   └── page.tsx       landing page
+├── components/ui/     componentes base (shadcn)
+├── lib/               cliente da API, Supabase, sessão, validação, Pix, formatação de relatórios
+├── types/             tipos compartilhados
+└── proxy.ts           renova a sessão do Supabase e protege as rotas logadas
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Como funciona
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Autenticação:** o Supabase Auth cuida da sessão. O `proxy.ts` (o antigo middleware, que o Next 16 chama de proxy) renova a sessão a cada requisição e manda para o login quem tenta abrir uma rota logada sem estar autenticado.
+- **Dados:** o `src/lib/api.ts` chama o `rezuma-api` e envia o token do Supabase no header `Authorization: Bearer <token>`. O backend valida esse token.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Rodando localmente
 
-## Learn More
+Pré-requisitos: Node.js 20+ e o `rezuma-api` rodando (ou uma URL dele já publicada).
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+cp .env.example .env.local   # preencha as variáveis
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Depois é só abrir [http://localhost:3000](http://localhost:3000).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Variáveis de ambiente
 
-## Deploy on Vercel
+| Variável | Descrição |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave pública (anon) do Supabase |
+| `NEXT_PUBLIC_API_URL` | URL base do `rezuma-api` |
+| `NEXT_PUBLIC_SITE_URL` | URL pública do site, usada no redirecionamento do logout (padrão: `http://localhost:3000`) |
+| `NEXT_PUBLIC_PIX_KEY` | Chave Pix para doações |
+| `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | Usuário do bot do Telegram (padrão: `RezumaAppBot`) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Comando | O que faz |
+| --- | --- |
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run build` | Build de produção |
+| `npm run start` | Sobe o build de produção |
+| `npm run lint` | ESLint |
+
+## Deploy
+
+Feito na **Vercel**. Configure as mesmas variáveis de ambiente no painel do projeto.
