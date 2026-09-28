@@ -8,6 +8,38 @@ import { getReadIds } from "@/lib/read-state";
 import { S, relativeLabel, periodTag, docTypeLabel } from "@/lib/report-format";
 import { Report } from "@/types";
 
+const PER_PAGE = 10;
+
+function PageButton({
+  label,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        fontFamily: S.mono,
+        fontSize: "11px",
+        color: disabled ? "rgba(237,237,234,0.25)" : "rgba(237,237,234,0.72)",
+        background: "transparent",
+        border: `1px solid ${S.border}`,
+        borderRadius: "6px",
+        padding: "7px 14px",
+        cursor: disabled ? "default" : "pointer",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 function ReportRow({
   report,
   unread,
@@ -86,17 +118,77 @@ function ReportRow({
   );
 }
 
+function FilterChip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      style={{
+        fontFamily: S.mono,
+        fontSize: "10px",
+        letterSpacing: "0.3px",
+        color: active ? S.accent : "rgba(237,237,234,0.62)",
+        background: active ? S.accentD : "transparent",
+        border: `1px solid ${active ? S.accentB : S.border}`,
+        borderRadius: "5px",
+        padding: "4px 10px",
+        cursor: "pointer",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 export default function ReportsListPage() {
   const { reports, loading, failed } = useReports();
   const [readIds,  setReadIds]  = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
+  const [page,     setPage]     = useState(1);
+  const [onlyUnread, setOnlyUnread] = useState(false);
 
-  // localStorage só existe no cliente: ler depois da montagem evita
+  // localStorage e a URL só existem no cliente: ler depois da montagem evita
   // divergência entre o HTML do servidor e o do navegador.
   useEffect(() => {
     setReadIds(getReadIds());
+    const params = new URLSearchParams(window.location.search);
+    const p = Number(params.get("p"));
+    if (Number.isInteger(p) && p > 1) setPage(p);
+    if (params.get("filtro") === "nao-lidos") setOnlyUnread(true);
     setHydrated(true);
   }, []);
+
+  // Página e filtro ficam na URL para que voltar de um relatório caia no
+  // mesmo lugar.
+  function syncUrl(nextPage: number, nextOnlyUnread: boolean) {
+    const url = new URL(window.location.href);
+    if (nextPage > 1) url.searchParams.set("p", String(nextPage));
+    else url.searchParams.delete("p");
+    if (nextOnlyUnread) url.searchParams.set("filtro", "nao-lidos");
+    else url.searchParams.delete("filtro");
+    window.history.replaceState(null, "", url);
+  }
+
+  function goTo(next: number) {
+    setPage(next);
+    syncUrl(next, onlyUnread);
+    window.scrollTo({ top: 0 });
+  }
+
+  function setFilter(next: boolean) {
+    setOnlyUnread(next);
+    setPage(1);
+    syncUrl(1, next);
+  }
 
   useEffect(() => {
     if (failed) toast.error("Erro ao carregar relatórios.");
@@ -118,6 +210,10 @@ export default function ReportsListPage() {
   }
 
   const unreadCount = hydrated ? reports.filter(r => !readIds.has(r.id)).length : 0;
+  const filtered    = onlyUnread && hydrated ? reports.filter(r => !readIds.has(r.id)) : reports;
+  const totalPages  = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const current     = Math.min(page, totalPages);
+  const visible     = filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE);
 
   return (
     <div style={{ maxWidth: "860px" }}>
@@ -138,10 +234,21 @@ export default function ReportsListPage() {
         </p>
       </div>
 
+      <div role="group" aria-label="Filtrar relatórios" style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+        <FilterChip label="todos" active={!onlyUnread} onClick={() => setFilter(false)} />
+        <FilterChip label="não lidos" active={onlyUnread} onClick={() => setFilter(true)} />
+      </div>
+
       <div style={{ height: "1px", background: S.border, marginBottom: "8px" }} />
 
+      {visible.length === 0 && (
+        <p style={{ fontFamily: S.sans, fontSize: "13px", color: S.textT, padding: "24px 0" }}>
+          Nenhum relatório não lido. Tudo em dia.
+        </p>
+      )}
+
       <div>
-        {reports.map(report => (
+        {visible.map(report => (
           <ReportRow
             key={report.id}
             report={report}
@@ -149,6 +256,19 @@ export default function ReportsListPage() {
           />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <nav
+          aria-label="Paginação dos relatórios"
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginTop: "20px" }}
+        >
+          <PageButton label="← anterior" disabled={current === 1} onClick={() => goTo(current - 1)} />
+          <span style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT }}>
+            página {current} de {totalPages}
+          </span>
+          <PageButton label="próxima →" disabled={current === totalPages} onClick={() => goTo(current + 1)} />
+        </nav>
+      )}
     </div>
   );
 }
