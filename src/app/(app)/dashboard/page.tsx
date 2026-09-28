@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useReports } from "@/lib/use-reports";
@@ -9,6 +9,8 @@ import { S, relativeLabel, periodTag, docTypeLabel } from "@/lib/report-format";
 import { Report } from "@/types";
 
 const PER_PAGE = 10;
+
+const noopSubscribe = () => () => {};
 
 function PageButton({
   label,
@@ -151,21 +153,20 @@ function FilterChip({
 
 export default function ReportsListPage() {
   const { reports, loading, failed } = useReports();
-  const [readIds,  setReadIds]  = useState<Set<string>>(new Set());
-  const [hydrated, setHydrated] = useState(false);
-  const [page,     setPage]     = useState(1);
-  const [onlyUnread, setOnlyUnread] = useState(false);
-
-  // localStorage e a URL só existem no cliente: ler depois da montagem evita
-  // divergência entre o HTML do servidor e o do navegador.
-  useEffect(() => {
-    setReadIds(getReadIds());
-    const params = new URLSearchParams(window.location.search);
-    const p = Number(params.get("p"));
-    if (Number.isInteger(p) && p > 1) setPage(p);
-    if (params.get("filtro") === "nao-lidos") setOnlyUnread(true);
-    setHydrated(true);
-  }, []);
+  // localStorage e a URL só existem no cliente. Enquanto os relatórios
+  // carregam, servidor e navegador mostram o mesmo "carregando…", então ler
+  // esses valores já no estado inicial não diverge na hidratação.
+  const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const [readIds] = useState<Set<string>>(() => getReadIds());
+  const [page, setPage] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const p = Number(new URLSearchParams(window.location.search).get("p"));
+    return Number.isInteger(p) && p > 1 ? p : 1;
+  });
+  const [onlyUnread, setOnlyUnread] = useState(() =>
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("filtro") === "nao-lidos"
+  );
 
   // Página e filtro ficam na URL para que voltar de um relatório caia no
   // mesmo lugar.
