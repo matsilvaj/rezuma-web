@@ -143,13 +143,39 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
       rafId = requestAnimationFrame(tick);
     };
 
+    // A animação só começa depois do carregamento (para não disputar a thread
+    // principal com a primeira pintura) e pausa quando o hero sai da tela.
+    let visible = true;
+    let started = false;
+    const play = () => { if (started && visible && !rafId) rafId = requestAnimationFrame(tick); };
+    const pause = () => { cancelAnimationFrame(rafId); rafId = 0; };
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) play(); else pause();
+    });
+    io.observe(canvas);
+
+    let idleId = 0;
+    const start = () => { started = true; play(); };
+    const schedule = () => {
+      idleId = window.requestIdleCallback
+        ? window.requestIdleCallback(start, { timeout: 1500 })
+        : window.setTimeout(start, 200);
+    };
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
+
     resize();
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMouse);
-    rafId = requestAnimationFrame(tick);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      pause();
+      io.disconnect();
+      window.removeEventListener("load", schedule);
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouse);
     };
@@ -190,10 +216,10 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
           paddingBottom: "22px",
         }}
       >
-        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "25px", width: "auto" }} />
+        <img src="/logo.svg" alt="Rezuma" width={158} height={44} style={{ display: "block", height: "25px", width: "auto" }} />
         <Link
           href={viewerName ? "/dashboard" : "/login"}
-          style={{ fontFamily: "var(--font-sans)", fontSize: "13px", fontWeight: 500, color: "rgba(237,237,234,0.40)", textDecoration: "none" }}
+          style={{ fontFamily: "var(--font-sans)", fontSize: "13px", fontWeight: 500, color: "rgba(237,237,234,0.62)", textDecoration: "none" }}
         >
           {viewerName ? `Olá, ${viewerName}` : "Entrar"}
         </Link>
@@ -212,7 +238,7 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
           textAlign: "center",
         }}
       >
-        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "2px", color: "rgba(237,237,234,0.22)", textTransform: "uppercase", marginBottom: "32px" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "2px", color: "rgba(237,237,234,0.55)", textTransform: "uppercase", marginBottom: "32px" }}>
           relatórios de fiis e ações
         </p>
 
@@ -234,7 +260,7 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
           Pare de ignorar<br />os relatórios.
         </h1>
 
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.38)", lineHeight: 1.75, maxWidth: "390px", marginBottom: "38px" }}>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.62)", lineHeight: 1.75, maxWidth: "390px", marginBottom: "38px" }}>
           Cada relatório dos seus FIIs e ações vira quatro parágrafos no seu
           e-mail e no Telegram, no mesmo dia.
         </p>
@@ -248,13 +274,13 @@ export function HeroSection({ viewerName }: { viewerName?: string | null }) {
           </Link>
           <a
             href="#exemplo"
-            style={{ fontFamily: "var(--font-sans)", background: "transparent", color: "rgba(237,237,234,0.45)", padding: "12px 26px", borderRadius: "8px", fontSize: "13px", fontWeight: 500, border: "1px solid rgba(237,237,234,0.09)", textDecoration: "none" }}
+            style={{ fontFamily: "var(--font-sans)", background: "transparent", color: "rgba(237,237,234,0.62)", padding: "12px 26px", borderRadius: "8px", fontSize: "13px", fontWeight: 500, border: "1px solid rgba(237,237,234,0.09)", textDecoration: "none" }}
           >
             Ver um resumo real
           </a>
         </div>
 
-        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.4px", color: "rgba(237,237,234,0.18)", marginTop: "26px" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.4px", color: "rgba(237,237,234,0.55)", marginTop: "26px" }}>
           documentos oficiais da CVM, do FNET e da B3
         </p>
       </div>

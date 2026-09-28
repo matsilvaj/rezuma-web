@@ -7,8 +7,8 @@ const S = {
   border:   "rgba(237,237,234,0.07)",
   borderSt: "rgba(237,237,234,0.12)",
   textP:    "#ededea",
-  textS:    "rgba(237,237,234,0.40)",
-  textT:    "rgba(237,237,234,0.18)",
+  textS:    "rgba(237,237,234,0.62)",
+  textT:    "rgba(237,237,234,0.55)",
   sans:     "var(--font-sans)",
   mono:     "var(--font-mono)",
 } as const;

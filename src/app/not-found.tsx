@@ -4,8 +4,8 @@ import { SiteFooter } from "./_components/site-footer";
 
 const S = {
   textP: "#ededea",
-  textS: "rgba(237,237,234,0.40)",
-  textT: "rgba(237,237,234,0.22)",
+  textS: "rgba(237,237,234,0.62)",
+  textT: "rgba(237,237,234,0.55)",
   mono:  "var(--font-mono)",
   sans:  "var(--font-sans)",
 } as const;
@@ -22,7 +22,7 @@ export default function NotFound() {
     <main style={{ background: "#07080a", minHeight: "var(--rz-vh)", display: "flex", flexDirection: "column" }}>
       <header className="rz-pad" style={{ maxWidth: "900px", width: "100%", margin: "0 auto", paddingTop: "22px", paddingBottom: "22px" }}>
         <Link href="/" aria-label="Rezuma">
-          <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "23px", width: "auto" }} />
+          <img src="/logo.svg" alt="Rezuma" width={158} height={44} style={{ display: "block", height: "23px", width: "auto" }} />
         </Link>
       </header>
 

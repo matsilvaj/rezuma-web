@@ -111,7 +111,7 @@ export default function ReportsListPage() {
       <div style={{ border: `1px dashed ${S.border}`, borderRadius: "10px", padding: "64px 32px", textAlign: "center", maxWidth: "640px" }}>
         <p style={{ fontFamily: S.sans, fontSize: "14px", color: S.textT, lineHeight: 1.7 }}>
           Nenhum relatório ainda.<br />
-          Adicione ativos em <strong style={{ color: "rgba(237,237,234,0.40)", fontWeight: 500 }}>Meus Ativos</strong> para começar.
+          Adicione ativos em <strong style={{ color: "rgba(237,237,234,0.62)", fontWeight: 500 }}>Meus Ativos</strong> para começar.
         </p>
       </div>
     );
@@ -131,7 +131,7 @@ export default function ReportsListPage() {
             {reports.length} {reports.length === 1 ? "relatório" : "relatórios"}
           </span>
         </div>
-        <p style={{ fontFamily: S.sans, fontSize: "14px", fontWeight: 500, color: "rgba(237,237,234,0.45)", lineHeight: 1.4 }}>
+        <p style={{ fontFamily: S.sans, fontSize: "14px", fontWeight: 500, color: "rgba(237,237,234,0.62)", lineHeight: 1.4 }}>
           {hydrated && unreadCount > 0
             ? `${unreadCount} ${unreadCount === 1 ? "não lido" : "não lidos"}`
             : "tudo em dia"}

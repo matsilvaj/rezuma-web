@@ -13,8 +13,8 @@ const D = {
   border:   "rgba(237,237,234,0.07)",
   borderSt: "rgba(237,237,234,0.12)",
   textP:    "#ededea",
-  textS:    "rgba(237,237,234,0.55)",
-  textT:    "rgba(237,237,234,0.22)",
+  textS:    "rgba(237,237,234,0.62)",
+  textT:    "rgba(237,237,234,0.55)",
   accent:   "#5eb88a",
   sans:     "var(--font-sans)",
   mono:     "var(--font-mono)",
@@ -78,7 +78,7 @@ function Texto() {
       </p>
 
       <div style={{ borderLeft: "2px solid rgba(94,184,138,0.35)", paddingLeft: "16px", marginTop: "16px" }}>
-        <p style={{ fontFamily: D.sans, fontSize: "13px", color: "rgba(237,237,234,0.40)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>
+        <p style={{ fontFamily: D.sans, fontSize: "13px", color: "rgba(237,237,234,0.62)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>
           <strong style={{ color: "rgba(237,237,234,0.62)", fontWeight: 700 }}>
             Patrimônio líquido de R$ 7,57 bilhões
           </strong>{" "}
@@ -96,7 +96,7 @@ function Texto() {
       </p>
 
       <div style={{ background: "rgba(237,80,50,0.05)", border: "1px solid rgba(237,80,50,0.12)", borderRadius: "6px", padding: "12px 14px", marginTop: "24px" }}>
-        <div style={{ ...ROTULO, color: "rgba(237,100,80,0.55)", letterSpacing: "1.4px", marginBottom: "6px" }}>Atenção</div>
+        <div style={{ ...ROTULO, color: "rgba(240,120,100,0.95)", letterSpacing: "1.4px", marginBottom: "6px" }}>Atenção</div>
         <p style={{ fontFamily: D.sans, fontSize: "13px", color: "rgba(237,150,130,0.70)", lineHeight: 1.7, margin: 0 }}>
           Aluguéis a receber totalizam 59 milhões de reais, sinalizando potencial inadimplência ou
           atrasos que merecem acompanhamento nos próximos meses.
@@ -106,7 +106,7 @@ function Texto() {
       <div style={{ background: "rgba(237,237,234,0.02)", border: `1px solid ${D.border}`, borderRadius: "6px", padding: "16px 18px", marginTop: "24px" }}>
         <div style={{ ...ROTULO, marginBottom: "14px" }}>Glossário</div>
         <div style={{ fontFamily: D.mono, fontSize: "11px", fontWeight: 700, color: D.textP, marginBottom: "4px" }}>CRI</div>
-        <p style={{ fontFamily: D.sans, fontSize: "12px", color: "rgba(237,237,234,0.38)", lineHeight: 1.65, margin: 0 }}>
+        <p style={{ fontFamily: D.sans, fontSize: "12px", color: "rgba(237,237,234,0.62)", lineHeight: 1.65, margin: 0 }}>
           Certificado de Recebíveis Imobiliários: um título de dívida em que o investidor empresta
           dinheiro para o setor imobiliário e recebe juros.
         </p>
@@ -148,7 +148,7 @@ export function ReportDemo({ layout }: { layout: "duas-colunas" | "empilhado" })
         </p>
         <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.textT, flexShrink: 0 }}>31 jul</span>
       </div>
-      <p style={{ fontFamily: D.sans, fontSize: "14px", fontWeight: 500, color: "rgba(237,237,234,0.45)", lineHeight: 1.4, margin: 0 }}>
+      <p style={{ fontFamily: D.sans, fontSize: "14px", fontWeight: 500, color: "rgba(237,237,234,0.62)", lineHeight: 1.4, margin: 0 }}>
         Informe Mensal, PÁTRIA LOG, FUNDO DE INVESTIMENTO IMOBILIÁRIO (08/2026)
       </p>
 

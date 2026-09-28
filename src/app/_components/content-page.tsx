@@ -35,11 +35,11 @@ export function ContentPage({
         }}
       >
         <Link href="/" aria-label="Rezuma">
-          <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "23px", width: "auto" }} />
+          <img src="/logo.svg" alt="Rezuma" width={158} height={44} style={{ display: "block", height: "23px", width: "auto" }} />
         </Link>
         <Link
           href="/"
-          style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(237,237,234,0.35)", textDecoration: "none" }}
+          style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(237,237,234,0.62)", textDecoration: "none" }}
         >
           voltar ao início
         </Link>
@@ -54,13 +54,13 @@ export function ContentPage({
         </h1>
 
         {resumo && (
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: "15px", color: "rgba(237,237,234,0.55)", lineHeight: 1.8, margin: "0 0 10px" }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: "15px", color: "rgba(237,237,234,0.62)", lineHeight: 1.8, margin: "0 0 10px" }}>
             {resumo}
           </p>
         )}
 
         {atualizado && (
-          <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(237,237,234,0.22)", letterSpacing: "0.3px", margin: 0 }}>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(237,237,234,0.55)", letterSpacing: "0.3px", margin: 0 }}>
             atualizado em {atualizado}
           </p>
         )}

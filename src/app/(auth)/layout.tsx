@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         fontFamily: "var(--font-sans)",
       }}
     >
-      <div
+      <main
         className="rz-pad"
         style={{
           flex: 1,
@@ -30,13 +30,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           aria-label="Rezuma"
           style={{ display: "flex", alignItems: "center", marginBottom: "52px", textDecoration: "none" }}
         >
-          <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "26px", width: "auto" }} />
+          <img src="/logo.svg" alt="Rezuma" width={158} height={44} style={{ display: "block", height: "26px", width: "auto" }} />
         </Link>
 
         <div style={{ width: "100%", maxWidth: "360px" }}>
           {children}
         </div>
-      </div>
+      </main>
 
       <SiteFooter compacto />
     </div>

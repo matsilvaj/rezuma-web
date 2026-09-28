@@ -11,8 +11,8 @@ import { validateName, validateEmail, validatePassword, validatePasswordConfirm 
 
 const S = {
   textP:   "#ededea",
-  textS:   "rgba(237,237,234,0.55)",
-  textT:   "rgba(237,237,234,0.22)",
+  textS:   "rgba(237,237,234,0.62)",
+  textT:   "rgba(237,237,234,0.55)",
   border:  "rgba(237,237,234,0.07)",
   borderS: "rgba(237,237,234,0.10)",
   accent:  "#5eb88a",
