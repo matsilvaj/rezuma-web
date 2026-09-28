@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const S = {
   border: "rgba(237,237,234,0.07)",
-  textS:  "rgba(237,237,234,0.40)",
-  textT:  "rgba(237,237,234,0.18)",
+  textS:  "rgba(237,237,234,0.62)",
+  textT:  "rgba(237,237,234,0.55)",
   mono:   "var(--font-mono)",
 } as const;
 
@@ -45,7 +45,7 @@ export function SiteFooter({
     >
       {!compacto && (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
-          <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
+          <img src="/logo.svg" alt="Rezuma" width={158} height={44} style={{ display: "block", height: "21px", width: "auto", opacity: 0.35 }} />
           <div style={{ display: "flex", gap: "24px" }}>
             {viewerName ? (
               <Link href="/dashboard" style={{ fontSize: "12px", color: S.textS, textDecoration: "none" }}>

@@ -136,7 +136,7 @@ export function SupportWidget() {
         </button>
       </div>
 
-      <p style={{ fontSize: "12px", color: "rgba(237,237,234,0.55)", lineHeight: 1.6, margin: 0 }}>
+      <p style={{ fontSize: "12px", color: "rgba(237,237,234,0.62)", lineHeight: 1.6, margin: 0 }}>
         Gratuito e sem anúncios. Se o Rezuma te poupa tempo, um Pix de
         qualquer valor ajuda a mantê-lo no ar.
       </p>

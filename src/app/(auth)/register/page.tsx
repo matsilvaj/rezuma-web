@@ -19,7 +19,7 @@ const S = {
     fontFamily: "var(--font-mono)",
     fontSize: "10px",
     letterSpacing: "1.2px",
-    color: "rgba(237,237,234,0.40)",
+    color: "rgba(237,237,234,0.62)",
     textTransform: "uppercase" as const,
     marginBottom: "7px",
   },
@@ -107,7 +107,7 @@ export default function RegisterPage() {
       <h1 style={{ fontFamily: "var(--font-sans)", fontSize: "24px", fontWeight: 700, color: "#ededea", letterSpacing: "-0.8px", marginBottom: "6px" }}>
         Criar conta
       </h1>
-      <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.40)", lineHeight: 1.6 }}>
+      <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.62)", lineHeight: 1.6 }}>
         Gratuito. Sem cartão, sem plano, sem período de teste.
       </p>
 
@@ -209,7 +209,7 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <p style={{ marginTop: "28px", fontSize: "13px", color: "rgba(237,237,234,0.35)", textAlign: "center" }}>
+      <p style={{ marginTop: "28px", fontSize: "13px", color: "rgba(237,237,234,0.62)", textAlign: "center" }}>
         Já tem conta?{" "}
         <Link href="/login" style={{ color: "rgba(237,237,234,0.65)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
           Entrar

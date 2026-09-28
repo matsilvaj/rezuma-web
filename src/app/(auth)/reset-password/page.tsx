@@ -11,7 +11,7 @@ const S = {
     fontFamily: "var(--font-mono)",
     fontSize: "10px",
     letterSpacing: "1.2px",
-    color: "rgba(237,237,234,0.40)",
+    color: "rgba(237,237,234,0.62)",
     textTransform: "uppercase" as const,
     marginBottom: "7px",
   },
@@ -80,7 +80,7 @@ export default function ResetPasswordPage() {
       <h1 style={{ fontFamily: "var(--font-sans)", fontSize: "24px", fontWeight: 700, color: "#ededea", letterSpacing: "-0.8px", marginBottom: "6px" }}>
         Redefinir senha
       </h1>
-      <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.40)", lineHeight: 1.6 }}>
+      <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(237,237,234,0.62)", lineHeight: 1.6 }}>
         Digite sua nova senha.
       </p>
 

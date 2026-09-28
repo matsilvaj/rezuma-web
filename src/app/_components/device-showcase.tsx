@@ -132,7 +132,7 @@ export function DeviceShowcase() {
               fontFamily: "var(--font-mono)",
               fontSize: "9px",
               letterSpacing: "0.4px",
-              color: "rgba(237,237,234,0.45)",
+              color: "rgba(237,237,234,0.62)",
               background: "rgba(13,15,17,0.92)",
               border: `1px solid ${BORDA}`,
               borderRadius: "999px",

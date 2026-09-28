@@ -33,7 +33,7 @@ export function AppTopNav() {
         className="rz-topnav-logo"
         style={{ display: "flex", alignItems: "center", gap: "9px", textDecoration: "none" }}
       >
-        <img src="/logo.svg" alt="Rezuma" style={{ display: "block", height: "23px", width: "auto" }} />
+        <img src="/logo.svg" alt="Rezuma" width={158} height={44} style={{ display: "block", height: "23px", width: "auto" }} />
       </Link>
 
       {/* Nav, centered */}
@@ -77,7 +77,7 @@ export function AppTopNav() {
           style={{
             fontFamily: "var(--font-sans)",
             fontSize: "12px",
-            color: "rgba(237,237,234,0.22)",
+            color: "rgba(237,237,234,0.55)",
             background: "transparent",
             border: "none",
             cursor: "pointer",
