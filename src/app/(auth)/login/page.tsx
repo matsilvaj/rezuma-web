@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import PasswordInput from "@/components/PasswordInput";
 import { validateEmail, validatePassword, translateSupabaseError } from "@/lib/validation";
 
 const LOCK_AFTER = 5;
@@ -176,9 +177,8 @@ export default function LoginPage() {
 
         <div>
           <label htmlFor="password" style={S.label}>Senha</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

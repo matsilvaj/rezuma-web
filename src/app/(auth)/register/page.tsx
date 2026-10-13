@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import PasswordInput from "@/components/PasswordInput";
 import {
   validateName,
   validateEmail,
@@ -149,9 +150,8 @@ export default function RegisterPage() {
 
         <div>
           <label htmlFor="password" style={S.label}>Senha</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="Mínimo 8 caracteres"
             autoComplete="new-password"
             value={password}
@@ -166,9 +166,8 @@ export default function RegisterPage() {
 
         <div>
           <label htmlFor="confirm" style={S.label}>Confirmar senha</label>
-          <input
+          <PasswordInput
             id="confirm"
-            type="password"
             placeholder="Repita a senha"
             autoComplete="new-password"
             value={confirm}
