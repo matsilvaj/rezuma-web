@@ -135,7 +135,7 @@ export default function AssetsPage() {
   return (
     <div style={{ maxWidth: "600px" }}>
 
-      {/* Header */}
+      
       <div style={{ marginBottom: "40px" }}>
         <p style={{ fontFamily: S.mono, fontSize: "10px", letterSpacing: "2px", color: S.textT, textTransform: "uppercase", marginBottom: "10px" }}>
           meus ativos
@@ -148,7 +148,7 @@ export default function AssetsPage() {
         </p>
       </div>
 
-      {/* Search */}
+      
       <div style={{ position: "relative", marginBottom: "32px" }}>
         <div style={{ position: "relative" }}>
           <input
@@ -188,7 +188,7 @@ export default function AssetsPage() {
           </div>
         </div>
 
-        {/* Dropdown */}
+        
         {showDrop && (searchLoad || suggestions.length > 0) && (
           <div style={{
             position: "absolute",
@@ -221,7 +221,7 @@ export default function AssetsPage() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    gap: "12px",
                     width: "100%",
                     padding: "11px 14px",
                     background: "transparent",
@@ -231,22 +231,35 @@ export default function AssetsPage() {
                     textAlign: "left",
                   }}
                 >
-                  <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontFamily: S.mono, fontSize: "13px", fontWeight: 700, color: S.textP }}>
-                      {s.ticker}
-                    </span>
-                    {s.name && s.name !== s.ticker && (
-                      <span style={{ fontFamily: S.sans, fontSize: "12px", color: S.textS }}>
-                        {s.name}
-                      </span>
-                    )}
-                    {s.type && (
-                      <span style={{ fontFamily: S.mono, fontSize: "9px", color: S.textT, border: `1px solid ${S.border}`, borderRadius: "4px", padding: "1px 6px", letterSpacing: "0.4px" }}>
-                        {s.type === "fii" ? "FII" : "AÇÃO"}
-                      </span>
-                    )}
+                  
+                  <span style={{ flexShrink: 0, width: "64px", fontFamily: S.mono, fontSize: "13px", fontWeight: 700, color: S.textP }}>
+                    {s.ticker}
                   </span>
-                  <span style={{ fontFamily: S.mono, fontSize: "10px", color: already ? S.textT : S.accent }}>
+
+                  
+                  <span
+                    title={s.name ?? undefined}
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      fontFamily: S.sans,
+                      fontSize: "12px",
+                      color: S.textS,
+                    }}
+                  >
+                    {s.name && s.name !== s.ticker ? s.name : ""}
+                  </span>
+
+                  
+                  <span style={{ flexShrink: 0, width: "44px", textAlign: "center", fontFamily: S.mono, fontSize: "9px", color: S.textT, border: `1px solid ${S.border}`, borderRadius: "4px", padding: "1px 0", letterSpacing: "0.4px", visibility: s.type ? "visible" : "hidden" }}>
+                    {s.type === "fii" ? "FII" : "AÇÃO"}
+                  </span>
+
+                  
+                  <span style={{ flexShrink: 0, width: "72px", textAlign: "right", whiteSpace: "nowrap", fontFamily: S.mono, fontSize: "10px", color: already ? S.textT : S.accent }}>
                     {already ? "adicionado" : "+ adicionar"}
                   </span>
                 </button>
@@ -256,14 +269,14 @@ export default function AssetsPage() {
         )}
       </div>
 
-      {/* Loading */}
+      
       {loading && (
         <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, letterSpacing: "1px" }}>
           carregando…
         </p>
       )}
 
-      {/* Empty state */}
+      
       {!loading && assets.length === 0 && (
         <div style={{ border: `1px dashed ${S.border}`, borderRadius: "10px", padding: "48px 32px", textAlign: "center" }}>
           <p style={{ fontFamily: S.sans, fontSize: "14px", color: S.textT, lineHeight: 1.7 }}>
@@ -273,7 +286,7 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* Asset list */}
+      
       {!loading && assets.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column" }}>
           {assets.map((asset, i) => {
@@ -335,7 +348,7 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* Asset count */}
+      
       {!loading && assets.length > 0 && (
         <p style={{ fontFamily: S.mono, fontSize: "10px", color: S.textT, marginTop: "24px" }}>
           {assets.length} ativo{assets.length !== 1 ? "s" : ""} monitorado{assets.length !== 1 ? "s" : ""}

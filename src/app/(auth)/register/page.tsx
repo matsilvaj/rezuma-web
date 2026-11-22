@@ -204,7 +204,7 @@ export default function RegisterPage() {
             marginTop: "4px",
           }}
         >
-          {loading ? "Criando conta…" : "Criar conta grátis"}
+          {loading ? "Criando conta…" : "Criar conta"}
         </button>
       </form>
 
